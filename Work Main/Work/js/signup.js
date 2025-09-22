@@ -1,4 +1,5 @@
 // signup.js
+document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('signupForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
@@ -66,7 +67,7 @@
       } else if(userType === 'conservency'){
         window.location.href = 'Driver Monitor/ConservancyMonitoringDriver.html';
       } else {
-        window.location.href = 'NirmalUser.html';
+        window.location.href = 'User.html';
       }
     });
 
@@ -95,3 +96,4 @@
         }
       });
     });
+});
