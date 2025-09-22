@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Center Driver Monitor App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css" />
+    <link rel="stylesheet" href="css/GC.css">
+</head>
+<body>
+    <header>
+        <h1>🚗 Driver Monitor</h1>
+        <p>Real-time Driver Tracking & Management System</p>
+    </header>
+
+    <div class="container">
+        <div id="map"></div>
+        <div class="sidebar">
+            <div class="section">
+                <h3>📊 System Overview</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Total Drivers</h4>
+                        <div class="number" id="totalDrivers">10</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Available</h4>
+                        <div class="number" id="availableDrivers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Allocated</h4>
+                        <div class="number" id="allocatedDrivers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Busy</h4>
+                        <div class="number" id="busyDrivers">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>👥 All Drivers</h3>
+                <div id="driverList" class="driver-list"></div>
+            </div>
+
+            <div class="section">
+                <h3>🎯 Driver Allocation</h3>
+                <div class="allocation-panel">
+                    <h4>Select Driver & Center</h4>
+                    <select id="driverSelect">
+                        <option value="">Choose Driver</option>
+                    </select>
+                    <select id="centerSelect">
+                        <option value="">Choose Center</option>
+                    </select>
+                    <button id="allocateBtn" class="btn success" disabled>Allocate Driver</button>
+                    <button id="deallocateBtn" class="btn danger" style="margin-top: 0.5rem;" disabled>Deallocate</button>
+                </div>
+                <div id="allocationStatus"></div>
+            </div>
+
+            <div class="section">
+                <h3>📍 Selected Driver Details</h3>
+                <div id="selectedDriverDetails" class="driver-details">
+                    <p>Select a driver to view details</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🔔 Notifications</h3>
+                <div id="notificationList" class="driver-list" style="max-height: 200px;"></div>
+            </div>
+
+            <div class="section">
+                <h3>⚙️ System Controls</h3>
+                <button id="refreshBtn" class="btn">Refresh Data</button>
+                <button id="simulateUpdateBtn" class="btn secondary">Simulate Location Update</button>
+                <div id="systemStatus" class="status">System Active</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <script src="js/GC.js"></script>
+</body>
+</html>
