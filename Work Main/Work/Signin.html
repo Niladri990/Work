@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in - Nirmal Waste Reporting App</title>
+  <link rel="stylesheet" href="css/style2.css">
+   <script src="js/signin.js"></script>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Sign in</h1>
+    <form id="loginForm">
+      <label>User Type</label>
+      <div style="margin-bottom: 1rem;">
+        <label style="display: inline-block; margin-right: 1rem;">
+          <input type="radio" name="userType" value="user" checked required /> User
+        </label>
+        <label style="display: inline-block; margin-right: 1rem;">
+          <input type="radio" name="userType" value="greenCenter" required /> Green Center
+        </label>
+        <label style="display: inline-block; margin-right: 1rem;">
+          <input type="radio" name="userType" value="rider" required /> Rider
+        </label>
+        <label style="display: inline-block;">
+          <input type="radio" name="userType" value="ngo" required /> NGO
+        </label>
+        <label style="display: inline-block; margin-left: 1rem;">
+          <input type="radio" name="userType" value="conservency" required /> Conservency
+        </label>
+      </div>
+
+      <div id="greenCenterFields" style="display: none;">
+        <label for="regNumber">Registration Number</label>
+        <input type="text" id="regNumber" name="regNumber" placeholder="Enter Registration Number" style="margin-bottom: 1rem;" />
+
+        <label for="ownerName">Owner Name</label>
+        <input type="text" id="ownerName" name="ownerName" placeholder="Enter Owner Name" style="margin-bottom: 1rem;" />
+      </div>
+      <div id="conservencyFields" style="display: none;">
+        <label for="conservencyRegNumber">Registration Number</label>
+        <input type="text" id="conservencyRegNumber" name="conservencyRegNumber" placeholder="Enter Registration Number" style="margin-bottom: 1rem;" />
+
+        <label for="conservencyOwnerName">Owner Name</label>
+        <input type="text" id="conservencyOwnerName" name="conservencyOwnerName" placeholder="Enter Owner Name" style="margin-bottom: 1rem;" />
+      </div>
+
+      <div id="riderOptions" style="display: none;">
+        <label for="riderType">Rider Type</label>
+        <select id="riderType" name="riderType" style="width: 100%; padding: 0.75rem; border-radius: var(--border-radius); border: 1.7px solid #ccc; font-size: 1rem; margin-bottom: 1rem; box-sizing: border-box;">
+          <option value="" disabled selected>Select Rider Type</option>
+          <option value="ngo">NGO Rider</option>
+          <option value="conservancy">Conservancy Rider</option>
+        </select>
+      </div>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" required />
+
+      <button type="submit">Sign in</button>
+      <div id="errorMsg" class="error"></div>
+    </form>
+    <div class="signup-link">
+      New user? <a href="Signup.html">Sign up here</a>
+    </div>
+  </div>
+
+
+</body>
+</html>

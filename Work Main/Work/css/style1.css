@@ -1,0 +1,113 @@
+/* style1.css */
+    /* CSS Variables for consistent theming */
+    :root {
+      --gov-blue: #0787ae;
+      --accent-orange: #fd7e14;
+      --text-primary: #000000;
+      --text-secondary: #495057;
+      --background-light: #f8f9fa;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    body, html {
+      margin: 0; padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background-light);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .signup-container {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--box-shadow);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      color: var(--gov-blue);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+    input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: var(--border-radius);
+      border: 1.7px solid #ccc;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+    }
+    input[type="email"]:focus, input[type="password"]:focus {
+      border-color: var(--accent-orange);
+      outline: none;
+      box-shadow: 0 0 8px rgba(253, 126, 20, 0.4);
+    }
+    button {
+      width: 100%;
+      background-color: var(--accent-orange);
+      color: white;
+      font-weight: 900;
+      font-size: 1.1rem;
+      padding: 1rem;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1bab38;
+    }
+    .error {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    .login-link {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .login-link a {
+      color: var(--gov-blue);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    .signup-container {
+      animation: fadeIn 2s ease-in-out;
+    }
+    h1 {
+      animation: slideInFromTop 1.5s ease-out;
+    }
+    button {
+      animation: bounceIn 1s ease-out 1.5s both;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideInFromTop {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideInFromBottom {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); opacity: 1; }
+    }
