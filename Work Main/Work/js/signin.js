@@ -37,7 +37,7 @@
           window.location.href = 'Driver/ConservencyDriver.html';
         }
       } else {
-        window.location.href = 'NirmalUser.html';
+        window.location.href = 'User.html';
       }
     });
 
