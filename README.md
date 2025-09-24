@@ -24,6 +24,7 @@ Summary of demo users (all with password `password123`):
 - NGO: `admin@ngo.com`
 - Conservency: `admin@conservency.com`
 - Rider (NGO): `rider@ngo.com`
+- Rider (Conservancy): `rider@conservency.com`
 - User: `user@test.com`
 
 
@@ -91,7 +92,9 @@ Currently, API calls are mocked; no server is required.
  | NGO          | admin@ngo.com         | password123 | Reg: NGO001       |
  | Conservency  | admin@conservency.com | password123 | Reg: CONS001      |
  | Rider (NGO)  | rider@ngo.com         | password123 | Type: NGO Rider   |
+ | Rider (Conservancy) | rider@conservency.com | password123 | Type: Conservancy Rider |
  | User         | user@test.com         | password123 | Regular user      |
+ 
  --------------------------------------------------------------------------
 ## 👥 Contributors
 

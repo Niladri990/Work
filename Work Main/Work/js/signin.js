@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             storeUserData(email, userType, riderType);
             
             // Redirect based on user type
-            redirectUser(userType);
+            redirectUser(userType, riderType);
             
         } catch (error) {
             console.error('Authentication error:', error);
@@ -144,15 +144,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Redirect user based on type
-    function redirectUser(userType) {
+    function redirectUser(userType, riderType) {
         const redirectMap = {
             'greenCenter': 'GreenCenter.html',
             'ngo': 'NGO.html',
             'conservency': 'ConservancyMonitor.html',
-            'rider': 'User.html',
+            // 'rider' will be handled below
             'user': 'User.html'
         };
-        
+
+        if (userType === 'rider') {
+            if (riderType === 'ngo') {
+                window.location.href = 'NGO Rider.html';
+                return;
+            } else if (riderType === 'conservancy') {
+                window.location.href = 'ConservancyRider.html';
+                return;
+            } else {
+                window.location.href = 'User.html';
+                return;
+            }
+        }
+
         const redirectUrl = redirectMap[userType] || 'User.html';
         window.location.href = redirectUrl;
     }
