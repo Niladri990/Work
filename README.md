@@ -93,13 +93,13 @@ Currently, API calls are mocked; no server is required.
  | Rider (NGO)  | rider@ngo.com         | password123 | Type: NGO Rider   |
  | User         | user@test.com         | password123 | Regular user      |
  --------------------------------------------------------------------------
- ## 👥 Contributors
+## 👥 Contributors
 
-Thanks to everyone who has contributed to this project!
+Thanks goes to these wonderful people ✨  
 
-| Name            | GitHub Username      | Role/Contribution         |
-|-----------------|---------------------|--------------------------|
-| Nirmal          | [@yourusername](https://github.com/yourusername) | Creator, Maintainer      |
-| Your Name Here  | [@contributor](https://github.com/contributor)   | Feature development, Docs|
+[![Contributors](https://contrib.rocks/image?repo=your-username/your-repo)](https://github.com/your-username/your-repo/graphs/contributors)
 
-Want to contribute? Open an issue or submit a pull request!
+Made with [contrib.rocks](https://contrib.rocks).
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
