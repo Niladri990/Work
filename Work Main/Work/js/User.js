@@ -1,4 +1,4 @@
-// User.js
+// User.js - JavaScript for User Interface
   const wasteTypes = [
     {id:'wet', name:'Wet Waste', icon:'https://img.icons8.com/ios-filled/50/004085/wet.png', category:'biodegradable'},
     {id:'dry', name:'Dry Waste', icon:'https://img.icons8.com/ios-filled/50/004085/empty-box.png', category:'non-biodegradable'},
@@ -1121,5 +1121,4 @@ console.log('renderSchedule called for', monthName, currentYear);
   document.addEventListener('DOMContentLoaded', () => {
     navigateTo('report'); // Default page
   });
-
 

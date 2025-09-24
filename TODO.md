@@ -1,15 +1,47 @@
-# TODO List for Waste Management App Enhancements
+# Project Structure
 
-- [x] Verify integration of bookings data with schedule rendering in Main.html
-- [ ] Test the schedule calendar UI and modal for adding/editing scheduled collections
-- [ ] Test the booking form validation and submission flow
-- [ ] Test the complaint reporting form including photo upload and location features
-- [ ] Test rider tracking simulation map and driver status updates
-- [ ] Test profile form save/load functionality
-- [ ] Add any missing features or fix bugs found during testing
-- [ ] Optimize UI responsiveness and accessibility
-- [ ] Prepare for deployment or further development as needed
-- [x] Make profile button link to profile.html and remove account section in ConservencyDriver.html
-- [x] Add checkNotifications function to ConservancyMonitoringDriver.html for real-time notification display
-- [x] Add conservency option to Signup.html and Signin.html with navigation to conservency driver monitor
-- [x] Add Registration Number and Owner Name fields for conservency users in both sign up and sign in forms
+```
+fullstack-project/
+│
+├── frontend/                      # React.js app
+│   ├── public/
+│   │   ├── index.html
+│   │   └── favicon.ico
+│   ├── src/
+│   │   ├── App.js                 # Main React component (fetch users, add user)
+│   │   ├── index.js               # React entry point
+│   │   └── components/            # (Optional) extra UI components
+│   ├── package.json               # React dependencies
+│   ├── package-lock.json
+│   └── README.md
+│
+├── backend/                       # Java + Gradle + Spring Boot
+│   ├── build.gradle               # Gradle config
+│   ├── settings.gradle
+│   ├── gradlew
+│   ├── gradlew.bat
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/example/demo/
+│   │   │   │   ├── DemoApplication.java         # Spring Boot main class
+│   │   │   │   ├── controller/
+│   │   │   │   │   └── UserController.java
+│   │   │   │   ├── model/
+│   │   │   │   │   ├── User.java                # MySQL entity
+│   │   │   │   │   └── ActivityLog.java         # MongoDB document
+│   │   │   │   └── repo/
+│   │   │   │       ├── UserRepository.java
+│   │   │   │       └── ActivityLogRepository.java
+│   │   │   └── resources/
+│   │   │       ├── application.properties       # MySQL + MongoDB config
+│   │   │       └── static/                      # (optional for serving static files)
+│   │   └── test/java/com/example/demo/
+│   │       └── DemoApplicationTests.java
+│   └── README.md
+│
+├── docker/                        # (Optional, containerization support)
+│   ├── docker-compose.yml         # Runs MySQL + MongoDB (and optionally backend/frontend)
+│   └── db-init-scripts/           # SQL or Mongo init scripts if needed
+│
+└── README.md                      # Project root instructions
+```

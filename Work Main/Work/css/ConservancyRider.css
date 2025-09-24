@@ -1,0 +1,287 @@
+/* ConservancyRider.css */
+  :root {
+    --uber-green: #06C167;
+    --uber-white: #ffffff;
+    --uber-gray: #f8f9fa;
+    --border-radius: 10px;
+    --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.10);
+    --accent-orange: #fd7e14;
+    --gov-blue: #004085;
+    --text-primary: #1c1c1c;
+    --text-secondary: #6c757d;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    font-family: 'Uber Move', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--uber-gray);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+  header {
+    background-color: var(--uber-black);
+    color: var(--uber-black);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+  }
+  header h1 {
+    flex-grow: 1;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  #onlineToggle {
+    background-color: var(--uber-green);
+    color: var(--uber-black);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.3s ease;
+  }
+  #onlineToggle.offline {
+    background-color: var(--uber-red);
+  }
+  #profileBtn {
+    background: none;
+    border: none;
+    color: var(--uber-black);
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  #profileBtn svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+  #notificationBtn {
+    background: none;
+    border: none;
+    color: var(--uber-black);
+    cursor: pointer;
+    font-size: 1.25rem;
+    position: relative;
+    margin-left: auto;
+    margin-right: 1rem;
+  }
+  #notificationBtn svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+  }
+  #notificationBadge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--uber-red);
+    color: var(--uber-black);
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  nav {
+    background: var(--uber-black);
+    display: flex;
+    justify-content: center;
+    border-bottom: 5px solid var(--uber-green);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+  }
+  nav button {
+    background: none;
+    border: none;
+    color: var(--uber-black);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: border-bottom 0.3s ease, background-color 0.3s ease;
+    border-bottom: 3px solid transparent;
+    flex: 1 1 auto;
+    max-width: 140px;
+  }
+  nav button.active, nav button:hover {
+    border-bottom: 3px solid var(--uber-green);
+    background-color: var(--uber-black);
+    color: var(--uber-green);
+  }
+  main.container {
+    max-width: 980px;
+    margin: 2rem auto;
+    background: var(--uber-black);
+    border-radius: var(--border-radius);
+    padding: 2rem 2.5rem;
+    box-shadow: var(--box-shadow);
+    min-height: 60vh;
+  }
+  h2 {
+    color: var(--gov-blue);
+    border-bottom: 3px solid var(--accent-orange);
+    padding-bottom: 0.3rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+  /* Notification panel */
+  #notificationPanel {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 320px;
+    max-height: 400px;
+    background: var(--uber-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+  }
+  #notificationPanel h3 {
+    margin: 0;
+    padding: 1rem;
+    background: var(--gov-blue);
+    color: var(--uber-white);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+  }
+  #notificationList {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 1rem 1rem 1rem;
+  }
+  #notificationList li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+  }
+  #notificationList li:last-child {
+    border-bottom: none;
+  }
+  #notificationList li.unread {
+    font-weight: 700;
+    background-color: #f0f8ff;
+  }
+  /* Buttons */
+  .btn-container {
+    margin-top: 1rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  #pageContent .submit-btn {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    margin-right: 2rem;
+    display: inline-flex;
+  }
+  #pageContent .submit-btn:last-child {
+    margin-right: 0;
+  }
+  button.submit-btn, button.gps-btn {
+    background-color: var(--accent-orange);
+    color: var(--uber-white);
+    font-weight: 900;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  button.submit-btn:hover, button.gps-btn:hover {
+    background-color: #1bab38;
+  }
+  button.submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  /* Sophisticated account/profile form styling */
+  #profileForm {
+    max-width: 550px;
+    margin: 2.7rem auto 0 auto;
+    padding: 2rem 1.5rem 0 1.5rem;
+    background: #f4f8fc;
+    border-radius: 20px;
+    box-shadow: 0 1px 14px 0 rgba(0,16,65,.08);
+  }
+  #profileForm label {
+    display: block;
+    font-weight: 700;
+    color: #22314A;
+    padding-bottom: 0.3rem;
+    margin-top: 2.1rem;
+    letter-spacing: 0.01em;
+    font-size: 1.1rem;
+  }
+  #profileForm input[type="text"],
+  #profileForm input[type="number"],
+  #profileForm input[type="tel"],
+  #profileForm input[type="email"] {
+    width: 100%;
+    font-size: 1.23rem;
+    padding: 1.2rem 1.1rem;
+    border: 1.8px solid #daf3fa;
+    border-radius: 13px;
+    background: #ffffff;
+    color: #22314a;
+    margin-top: 0.25rem;
+    box-sizing: border-box;
+    margin-bottom: 0.1rem;
+    outline: none;
+    box-shadow: 0 2px 12px 0 rgba(0,16,65,0.04);
+    transition: border 0.2s, box-shadow 0.18s;
+    font-weight: 400;
+    letter-spacing: 0.004em;
+  }
+  #profileForm input:focus {
+    border: 2.4px solid #fd7e14;
+    background: #fef9f7;
+    box-shadow: 0 4px 16px 0 rgba(253,126,20,.09);
+  }
+  #profileForm input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+  #profileForm input::placeholder {
+    color: #abc2d3;
+    font-size: 1.17rem;
+    opacity: 1;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+  @media (max-width: 700px) {
+    main.container {
+      padding: 1rem 0.4rem;
+    }
+    #profileForm {
+      max-width: 99vw; padding: 1.3rem 0.45rem 0 0.45rem;
+    }
+  }
+  @media (max-width: 480px) {
+    nav button {
+      padding: 0.8rem 1rem;
+      font-size: 0.9rem;
+    }
+    .btn-container {
+      flex-direction: column;
+    }
+    button.submit-btn, button.gps-btn, #pageContent .submit-btn {
+      width: 100%;
+      margin-right: 0;
+    }
+    #profileForm {
+      padding: 0.6rem 0.10rem 0 0.10rem;
+      border-radius: 0;
+    }
+  }
