@@ -1,41 +1,37 @@
-// User.js - Main user interface for waste reporting app
-// Import utility functions (assuming utils.js is loaded before this file)
-const { Utils, WASTE_TYPES, RECYCLING_CENTERS, POLY_FUEL_CENTERS } = window;
+// User.js - JavaScript for User Interface
+  const wasteTypes = [
+    {id:'wet', name:'Wet Waste', icon:'https://img.icons8.com/ios-filled/50/004085/wet.png', category:'biodegradable'},
+    {id:'dry', name:'Dry Waste', icon:'https://img.icons8.com/ios-filled/50/004085/empty-box.png', category:'non-biodegradable'},
+    {id:'plastic', name:'Plastic Waste', icon:'https://img.icons8.com/ios-filled/50/004085/plastic.png', category:'non-biodegradable'},
+    {id:'ewaste', name:'E-Waste', icon:'https://img.icons8.com/ios-filled/50/004085/electronics.png', category:'non-biodegradable'},
+    {id:'nonveg', name:'Non-Veg Waste', icon:'https://freesvg.org/img/1531813245.png', category:'biodegradable'},
+    {id:'hazardous', name:'Hazardous Waste', icon:'https://tse1.mm.bing.net/th/id/OIP.2oCpxXrQyDdgQhe0AWNRhgAAAA?r=0&w=416&h=416&rs=1&pid=ImgDetMain&o=7&rm=3', category:'non-biodegradable'},
+  ];
 
-// Application state
-const AppState = {
-    complaints: [],
-    scheduledCollections: [],
-    bookings: [],
-    currentYear: new Date().getFullYear(),
-    currentMonth: new Date().getMonth(),
-    selectedWasteType: null,
-    
-    // Initialize state from localStorage
-    init() {
-        this.complaints = Utils.storage.getItem('complaints', []);
-        this.scheduledCollections = Utils.storage.getItem('scheduledCollections', []);
-        this.bookings = Utils.storage.getItem('bookings', []);
-    },
-    
-    // Save state to localStorage
-    save() {
-        Utils.storage.setItem('complaints', this.complaints);
-        Utils.storage.setItem('scheduledCollections', this.scheduledCollections);
-        Utils.storage.setItem('bookings', this.bookings);
-    }
-};
+  const recyclingCenters = [
+    {name: "Sunrise Recycling Center", lat: 28.6448, lng: 77.2167},
+    {name: "GreenEarth Waste Processing", lat: 28.5355, lng: 77.3910},
+    {name: "EcoCycle Hub", lat: 28.4089, lng: 77.3178},
+  ];
 
-// Initialize app state
-AppState.init();
+  const polyFuelCenters = [
+    {name: "PolyFuel Plant A", lat: 28.7041, lng: 77.1025},
+    {name: "PolyFuel Plant B", lat: 28.6139, lng: 77.2090},
+  ];
 
-// Render Report page
-function renderReport() {
-    const wasteOptionsHtml = WASTE_TYPES.map(wt => `
-        <div class="dropdown-item" data-id="${wt.id}">
-            <img src="${wt.icon}" alt="${wt.name} icon" style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"/>
-            <span>${wt.name}</span>
-        </div>
+  let complaints = [];
+  let scheduledCollections = [];
+  let bookings = [];
+  let currentYear = new Date().getFullYear();
+  let currentMonth = new Date().getMonth();
+  let selectedWasteType = null;
+
+  // Render Report page
+  function renderReport(){
+    const wasteOptionsHtml = wasteTypes.map(wt => `
+      <div class="dropdown-item" data-id="${wt.id}">
+        <img src="${wt.icon}" alt="${wt.name} icon" style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"/><span>${wt.name}</span>
+      </div>
     `).join('');
 
     const html = `
@@ -166,15 +162,15 @@ function renderReport() {
     });
 
     menu.querySelectorAll('.dropdown-item').forEach(item => {
-        item.addEventListener('click', () => {
-            AppState.selectedWasteType = item.getAttribute('data-id');
-            const waste = WASTE_TYPES.find(w => w.id === AppState.selectedWasteType);
-            selectionSpan.innerHTML = `<img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"/> ${waste.name}`;
-            menu.classList.remove('show');
-            toggle.setAttribute('aria-expanded', 'false');
-            populateMaterialTypes(AppState.selectedWasteType);
-            validateForm();
-        });
+      item.addEventListener('click', () => {
+        selectedWasteType = item.getAttribute('data-id');
+        const waste = wasteTypes.find(w => w.id === selectedWasteType);
+        selectionSpan.innerHTML = `<img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"/> ${waste.name}`;
+        menu.classList.remove('show');
+        toggle.setAttribute('aria-expanded', 'false');
+        populateMaterialTypes(selectedWasteType);
+        validateForm();
+      });
     });
 
     photoInput.addEventListener('change', () => {
@@ -199,160 +195,100 @@ function renderReport() {
     });
   }
 
-function submitComplaint() {
-    try {
-        const formData = getComplaintFormData();
-        const validationResult = validateComplaintData(formData);
-        
-        if (!validationResult.isValid) {
-            Utils.showNotification(validationResult.error, 'error');
-            return;
-        }
-        
-        const complaint = createComplaint(formData);
-        AppState.complaints.push(complaint);
-        AppState.save();
-        
-        Utils.showNotification("Complaint submitted successfully.", 'success');
-        AppState.selectedWasteType = null;
-        
-        // Offer to schedule a collection for the reported waste type
-        if (confirm("Would you like to schedule a collection for this waste type?")) {
-            navigateTo('schedule');
-            scheduleCollectionForComplaint(complaint);
-        } else {
-            navigateTo('complaints');
-        }
-        
-    } catch (error) {
-        console.error('Error submitting complaint:', error);
-        Utils.showNotification('An error occurred while submitting the complaint.', 'error');
-    }
-}
-
-function getComplaintFormData() {
+  function submitComplaint(){
     const descVal = document.getElementById('description').value.trim();
     const locVal = document.getElementById('location').value.trim();
     const photoInput = document.getElementById('photoInput');
     const locType = document.querySelector('input[name="locationType"]:checked');
     const selectedMaterials = Array.from(document.querySelectorAll('input[name="materialTypes"]:checked')).map(cb => cb.value);
+
+    if(!selectedWasteType || !descVal || !locVal || !locType){
+      alert("Please fill all mandatory fields.");
+      return;
+    }
+    if(selectedMaterials.length === 0){
+      alert("Please select at least one material type.");
+      return;
+    }
+
     const photoNames = Array.from(photoInput.files).map(f => f.name).join(', ');
-    
-    return {
-        description: descVal,
-        location: locVal,
-        locationType: locType,
-        materials: selectedMaterials,
-        photos: photoNames,
-        wasteType: AppState.selectedWasteType
+
+    const complaint = {
+      id: Date.now(),
+      type: selectedWasteType,
+      materials: selectedMaterials,
+      locationType: locType.value,
+      description: descVal,
+      location: locVal,
+      photo: photoNames || null,
+      status: 'Pending',
+      date: new Date().toLocaleString()
     };
-}
+    complaints.push(complaint);
 
-function validateComplaintData(data) {
-    if (!data.wasteType || !data.description || !data.location || !data.locationType) {
-        return { isValid: false, error: "Please fill all mandatory fields." };
-    }
-    
-    if (data.materials.length === 0) {
-        return { isValid: false, error: "Please select at least one material type." };
-    }
-    
-    return { isValid: true };
-}
+    alert("Complaint submitted successfully.");
+    selectedWasteType = null;
 
-function createComplaint(formData) {
-    return {
-        id: Utils.generateId(),
-        type: formData.wasteType,
-        materials: formData.materials,
-        locationType: formData.locationType.value,
-        description: formData.description,
-        location: formData.location,
-        photo: formData.photos || null,
-        status: 'Pending',
-        date: Utils.formatDate(new Date())
-    };
-}
-
-function scheduleCollectionForComplaint(complaint) {
-    const today = new Date().toISOString().split('T')[0];
-    openScheduleModal(today);
-    
-    // Pre-select the waste type after a short delay to ensure modal is rendered
-    setTimeout(() => {
+    // Offer to schedule a collection for the reported waste type
+    if (confirm("Would you like to schedule a collection for this waste type?")) {
+      navigateTo('schedule');
+      // Open modal for today's date and pre-select the waste type
+      const today = new Date().toISOString().split('T')[0];
+      openScheduleModal(today);
+      // Pre-select the waste type after a short delay to ensure modal is rendered
+      setTimeout(() => {
         const cb = document.querySelector(`input[name="scheduleWasteTypes"][value="${complaint.type}"]`);
         if (cb) cb.checked = true;
-    }, 100);
-}
-
-function renderComplaints() {
-    let html = `<h2>My Complaints</h2>`;
-    
-    if (AppState.complaints.length === 0) {
-        html += `<p>No complaints submitted yet.</p>`;
+      }, 100);
     } else {
-        html += '<ul style="list-style:none; padding-left:0;">';
-        AppState.complaints.forEach(complaint => {
-            const waste = WASTE_TYPES.find(w => w.id === complaint.type);
-            const materialsList = complaint.materials ? complaint.materials.join(', ') : '';
-            
-            html += `
-                <li style="margin-bottom: 1rem; padding:1rem; border:1px solid var(--border-color); border-radius: var(--border-radius); background:#f9f9f9; box-shadow: var(--shadow);">
-                    <img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle"/>
-                    <strong> ${waste.name}</strong> (${complaint.locationType})<br/>
-                    <strong>Materials:</strong> ${materialsList}<br/>
-                    <strong>Description:</strong> ${complaint.description}<br/>
-                    <strong>Location:</strong> ${complaint.location}<br/>
-                    <strong>Date:</strong> ${complaint.date}<br/>
-                    <strong>Status:</strong> ${complaint.status}
-                    ${complaint.photo ? `<br/><strong>Photo(s):</strong> ${complaint.photo}` : ''}
-                    ${complaint.status === 'Pending' ? `<br/><em>Expected resolution date/time: ${complaint.date}</em>` : ''}
-                </li>
-            `;
-        });
-        html += '</ul>';
+      navigateTo('complaints');
     }
-    
+  }
+
+  function renderComplaints(){
+    let html = `<h2>My Complaints</h2>`;
+    if(complaints.length === 0){
+      html += `<p>No complaints submitted yet.</p>`;
+    } else {
+      html += '<ul style="list-style:none; padding-left:0;">';
+      complaints.forEach(c => {
+        const waste = wasteTypes.find(w => w.id === c.type);
+        const materialsList = c.materials ? c.materials.join(', ') : '';
+        html += `<li style="margin-bottom: 1rem; padding:1rem; border:1px solid var(--border-color); border-radius: var(--border-radius); background:#f9f9f9; box-shadow: var(--shadow);">
+          <img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle"/>
+          <strong> ${waste.name}</strong> (${c.locationType})<br/>
+          <strong>Materials:</strong> ${materialsList}<br/>
+          <strong>Description:</strong> ${c.description}<br/>
+          <strong>Location:</strong> ${c.location}<br/>
+          <strong>Date:</strong> ${c.date}<br/>
+        <strong>Status:</strong> ${c.status}
+        ${c.photo ? `<br/><strong>Photo(s):</strong> ${c.photo}` : ''}
+        ${c.status === 'Pending' ? `<br/><em>Expected resolution date/time: ${c.date}</em>` : ''}
+      </li>`;
+      });
+      html += '</ul>';
+    }
     document.getElementById('pageContent').innerHTML = html;
-}
+  }
 
-function renderDashboard() {
-    const totalComplaints = AppState.complaints.length;
-    const pendingComplaints = AppState.complaints.filter(c => c.status === 'Pending').length;
-    const resolvedComplaints = AppState.complaints.filter(c => c.status === 'Resolved').length;
-    const rejectedComplaints = AppState.complaints.filter(c => c.status === 'Rejected').length;
-    
+  function renderDashboard(){
     document.getElementById('pageContent').innerHTML = `
-        <h2>Dashboard Overview</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
-            <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
-                <h3 style="margin: 0; color: #007bff;">${totalComplaints}</h3>
-                <p style="margin: 0.5rem 0 0 0;">Total Complaints</p>
-            </div>
-            <div style="padding: 1rem; background: #fff3cd; border-radius: 8px; text-align: center;">
-                <h3 style="margin: 0; color: #856404;">${pendingComplaints}</h3>
-                <p style="margin: 0.5rem 0 0 0;">Pending</p>
-            </div>
-            <div style="padding: 1rem; background: #d4edda; border-radius: 8px; text-align: center;">
-                <h3 style="margin: 0; color: #155724;">${resolvedComplaints}</h3>
-                <p style="margin: 0.5rem 0 0 0;">Resolved</p>
-            </div>
-            <div style="padding: 1rem; background: #f8d7da; border-radius: 8px; text-align: center;">
-                <h3 style="margin: 0; color: #721c24;">${rejectedComplaints}</h3>
-                <p style="margin: 0.5rem 0 0 0;">Rejected</p>
-            </div>
-        </div>
-        <p>This dashboard can be expanded with charts and city statistics.</p>
+      <h2>Dashboard Overview</h2>
+      <p>Total Complaints Submitted: <strong>${complaints.length}</strong></p>
+      <p>Pending: <strong>${complaints.filter(c => c.status === 'Pending').length}</strong></p>
+      <p>Resolved: <strong>${complaints.filter(c => c.status === 'Resolved').length}</strong></p>
+      <p>Rejected: <strong>${complaints.filter(c => c.status === 'Rejected').length}</strong></p>
+      <p>This dashboard can be expanded with charts and city statistics.</p>
     `;
-}
+  }
 
-function renderBooking() {
-    const wasteTypeCheckboxes = WASTE_TYPES.map(wt => `
-        <label style="flex:1 1 45%; display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem; cursor:pointer;">
-            <input type="checkbox" name="bookingWasteTypes" value="${wt.id}" />
-            <img src="${wt.icon}" alt="${wt.name} icon" style="width:24px; height:24px;" />
-            <span>${wt.name}</span>
-        </label>
+  function renderBooking(){
+    const wasteTypeCheckboxes = wasteTypes.map(wt => `
+      <label style="flex:1 1 45%; display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem; cursor:pointer;">
+        <input type="checkbox" name="bookingWasteTypes" value="${wt.id}" />
+        <img src="${wt.icon}" alt="${wt.name} icon" style="width:24px; height:24px;" />
+        <span>${wt.name}</span>
+      </label>
     `).join('');
 
     document.getElementById('pageContent').innerHTML = `
@@ -446,56 +382,53 @@ function renderBooking() {
     }
 
     bookingForm.addEventListener('submit', e => {
-        e.preventDefault();
-        
-        try {
-            const bookingData = createBookingData(bookingForm, startDateInput, endDateInput);
-            AppState.bookings.push(bookingData);
-            AppState.save();
-            
-            Utils.showNotification("Conservancy service booked successfully!", 'success');
-            
-            // Reset form
-            bookingForm.reset();
-            submitBtn.disabled = true;
-            document.getElementById('pickupLocation').value = '';
-            
-            // Update schedule calendar if visible
-            if (document.querySelector('#calendar')) {
-                renderSchedule();
-            }
-            
-        } catch (error) {
-            console.error('Error booking service:', error);
-            Utils.showNotification('An error occurred while booking the service.', 'error');
-        }
+      e.preventDefault();
+      const bookingData = {
+        id: Date.now(),
+        locationType: bookingForm.querySelector('input[name="locationTypeBooking"]:checked').value,
+        pickupLocation: document.getElementById('pickupLocation').value.trim(),
+        startDate: startDateInput.value,
+        endDate: endDateInput.value,
+        frequency: bookingForm.frequency.value,
+        wasteTypes: Array.from(bookingForm.querySelectorAll('input[name="bookingWasteTypes"]:checked')).map(cb => cb.value),
+        remarks: document.getElementById('remarks').value.trim(),
+        date: new Date().toLocaleString()
+      };
+      bookings.push(bookingData);
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+      alert("Conservancy service booked successfully!");
+      bookingForm.reset();
+      submitBtn.disabled = true;
+      document.getElementById('pickupLocation').value = '';
+      // Optionally, update schedule calendar if visible
+      if (document.querySelector('#calendar')) {
+        renderSchedule();
+      }
     });
-    
-    function createBookingData(form, startDateInput, endDateInput) {
-        return {
-            id: Utils.generateId(),
-            locationType: form.querySelector('input[name="locationTypeBooking"]:checked').value,
-            pickupLocation: document.getElementById('pickupLocation').value.trim(),
-            startDate: startDateInput.value,
-            endDate: endDateInput.value,
-            frequency: form.frequency.value,
-            wasteTypes: Array.from(form.querySelectorAll('input[name="bookingWasteTypes"]:checked')).map(cb => cb.value),
-            remarks: document.getElementById('remarks').value.trim(),
-            date: Utils.formatDate(new Date())
-        };
-    }
   }
 
-function renderSchedule() {
-    const monthName = new Date(AppState.currentYear, AppState.currentMonth).toLocaleString('default', { month: 'long' });
-    const daysInMonth = new Date(AppState.currentYear, AppState.currentMonth + 1, 0).getDate();
-    const firstDay = new Date(AppState.currentYear, AppState.currentMonth, 1).getDay();
+  function renderSchedule(){
+    const monthName = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' });
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+
+    const storedSchedules = localStorage.getItem('scheduledCollections');
+    if(storedSchedules){
+      scheduledCollections = JSON.parse(storedSchedules);
+    }
+
+    const storedBookings = localStorage.getItem('bookings');
+    if(storedBookings){
+      bookings = JSON.parse(storedBookings);
+    }
+
+console.log('renderSchedule called for', monthName, currentYear);
 
     let calendarHtml = `<h2>Waste Collection Schedule</h2>
     <div id="calendar" style="max-width: 900px; margin: 0 auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <button onclick="prevMonth()"><</button>
-        <h3>${monthName} ${AppState.currentYear}</h3>
+        <h3>${monthName} ${currentYear}</h3>
         <button onclick="nextMonth()">></button>
       </div>
       <table style="width: 100%; border-collapse: collapse;">
@@ -515,11 +448,11 @@ function renderSchedule() {
         } else if (date > daysInMonth) {
           calendarHtml += '<td></td>';
         } else {
-          const dateStr = `${AppState.currentYear}-${String(AppState.currentMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-          const scheduled = AppState.scheduledCollections.find(s => s.date === dateStr);
-          const booking = AppState.bookings.find(b => b.startDate <= dateStr && b.endDate >= dateStr);
+          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+          const scheduled = scheduledCollections.find(s => s.date === dateStr);
+          const booking = bookings.find(b => b.startDate <= dateStr && b.endDate >= dateStr);
           const typesHtml = scheduled ? scheduled.types.map(wt => {
-            const waste = WASTE_TYPES.find(w => w.id === wt);
+            const waste = wasteTypes.find(w => w.id === wt);
             const centerType = waste.category === 'biodegradable' ? 'Poly Fuel' : 'Recycling';
             return `<img src="${waste.icon}" alt="${waste.name} - ${centerType}" style="width:16px; height:16px;" title="${waste.name} - ${centerType}"/>`;
           }).join('') : '';
@@ -572,7 +505,7 @@ function renderSchedule() {
 
             <div id="wasteTypeCheckboxes" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
 
-              ${WASTE_TYPES.map(wt => `
+              ${wasteTypes.map(wt => `
 
                 <label style="flex: 1 1 45%; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
 
@@ -622,202 +555,267 @@ function renderSchedule() {
 
   }
 
-function prevMonth() {
-    AppState.currentMonth--;
-    
-    if (AppState.currentMonth < 0) {
-        AppState.currentMonth = 11;
-        AppState.currentYear--;
-    }
-    
-    renderSchedule();
-}
+  function prevMonth() {
 
-function nextMonth() {
-    AppState.currentMonth++;
-    
-    if (AppState.currentMonth > 11) {
-        AppState.currentMonth = 0;
-        AppState.currentYear++;
-    }
-    
-    renderSchedule();
-}
+    currentMonth--;
 
-function getCurrentLocationReport() {
+    if (currentMonth < 0) {
+
+      currentMonth = 11;
+
+      currentYear--;
+
+    }
+
+    renderSchedule();
+
+  }
+
+  function nextMonth() {
+
+    currentMonth++;
+
+    if (currentMonth > 11) {
+
+      currentMonth = 0;
+
+      currentYear++;
+
+    }
+
+    renderSchedule();
+
+  }
+
+  function getCurrentLocationReport(){
     const gpsInfo = document.getElementById('gpsInfoReport');
     gpsInfo.textContent = "Getting location...";
-    
-    Utils.getCurrentLocation()
-        .then(location => {
-            gpsInfo.textContent = `Latitude ${location.lat}, Longitude ${location.lng}`;
-            const locInput = document.getElementById('location');
-            if (locInput) locInput.value = `${location.lat}, ${location.lng}`;
-            updateNearestCenter(location.lat, location.lng);
-        })
-        .catch(error => {
-            gpsInfo.textContent = "";
-            Utils.showNotification(error.message, 'error');
-            console.error(error);
-        });
-}
+    if (!navigator.geolocation) {
+      gpsInfo.textContent = "Geolocation is not supported by this browser.";
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(position => {
+      const { latitude: lat, longitude: lng } = position.coords;
+      gpsInfo.textContent = `Latitude ${lat}, Longitude ${lng}`;
+      const locInput = document.getElementById('location');
+      if(locInput) locInput.value = `${lat}, ${lng}`;
+      updateNearestCenter(lat, lng);
+    }, error => {
+      gpsInfo.textContent = "";
+      alert("Unable to retrieve your location.");
+      console.error(error);
+    }, {timeout:15000});
+  }
 
-function getCurrentLocationSchedule() {
+  function getCurrentLocationSchedule(){
     const infoDiv = document.getElementById('nearestCentersInfo');
     infoDiv.textContent = "Getting location...";
-    
-    Utils.getCurrentLocation()
-        .then(location => {
-            infoDiv.textContent = `Latitude ${location.lat}, Longitude ${location.lng}`;
-            const locInput = document.getElementById('scheduleLocation');
-            if (locInput) locInput.value = `${location.lat}, ${location.lng}`;
-            showNearestCenters();
-        })
-        .catch(error => {
-            infoDiv.textContent = "";
-            Utils.showNotification(error.message, 'error');
-            console.error(error);
-        });
-}
+    if (!navigator.geolocation) {
+      infoDiv.textContent = "Geolocation is not supported by this browser.";
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(position => {
+      const { latitude: lat, longitude: lng } = position.coords;
+      infoDiv.textContent = `Latitude ${lat}, Longitude ${lng}`;
+      const locInput = document.getElementById('scheduleLocation');
+      if(locInput) locInput.value = `${lat}, ${lng}`;
+      showNearestCenters();
+    }, error => {
+      infoDiv.textContent = "";
+      alert("Unable to retrieve your location.");
+      console.error(error);
+    }, {timeout:15000});
+  }
 
-function updateNearestCenter(lat, lng) {
-    const centerContainer = document.getElementById('nearestCenter');
-    
-    if (!centerContainer) return;
-    
-    // If coordinates not provided, try to parse from location input
-    if (lat === undefined || lng === undefined) {
-        const locText = document.getElementById('location')?.value.trim();
-        if (!locText) {
-            centerContainer.style.display = "none";
-            return;
-        }
-        
-        const coords = Utils.parseCoordinates(locText);
-        if (!coords) {
-            centerContainer.style.display = "none";
-            return;
-        }
-        
-        lat = coords.lat;
-        lng = coords.lng;
-    }
-    
-    if (lat === undefined || lng === undefined) {
+  function updateNearestCenter(lat, lng){
+
+    let centerContainer = document.getElementById('nearestCenter');
+
+    if(!centerContainer) return;
+
+    if(lat === undefined || lng === undefined){
+
+      const locText = document.getElementById('location')?.value.trim();
+
+      if(!locText){
+
         centerContainer.style.display = "none";
+
         return;
+
+      }
+
+      const parts = locText.split(',').map(p => p.trim());
+
+      if(parts.length === 2){
+
+        const l1 = parseFloat(parts[0]);
+
+        const l2 = parseFloat(parts[1]);
+
+        if(!isNaN(l1) && !isNaN(l2)){
+
+          lat = l1; lng = l2;
+
+        }
+
+      }
+
     }
-    
-    const nearest = Utils.findNearestCenter(lat, lng, RECYCLING_CENTERS);
-    
-    if (nearest) {
-        centerContainer.innerHTML = `Nearest Recycling Center: <strong>${nearest.center.name}</strong> (~${nearest.distance.toFixed(1)} km)`;
-        centerContainer.style.display = "block";
+
+    if(lat === undefined || lng === undefined){
+
+      centerContainer.style.display = "none";
+
+      return;
+
+    }
+
+    let minDist = Infinity;
+
+    let nearest = null;
+
+    recyclingCenters.forEach(center => {
+
+      const dist = getDistance(lat, lng, center.lat, center.lng);
+
+      if(dist < minDist){
+
+        minDist = dist;
+
+        nearest = center;
+
+      }
+
+    });
+
+    if(nearest){
+      centerContainer.innerHTML = `Nearest Recycling Center: <strong>${nearest.name}</strong> (~${minDist.toFixed(1)} km)`;
+      centerContainer.style.display = "block";
     } else {
-        centerContainer.style.display = "none";
+      centerContainer.style.display = "none";
     }
-}
+  }
 
+  function getDistance(lat1, lng1, lat2, lng2){
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const d = R * c; // Distance in km
+    return d;
+  }
 
-function showNearestCenters() {
+  function showNearestCenters(){
     const locText = document.getElementById('scheduleLocation').value.trim();
-    
-    if (!locText) {
-        Utils.showNotification("Please enter your location.", 'warning');
-        return;
+    if(!locText){
+      alert("Please enter your location.");
+      return;
     }
-    
-    const coords = Utils.parseCoordinates(locText);
-    if (!coords) {
-        Utils.showNotification("Please enter location in format: latitude,longitude", 'error');
-        return;
+    const parts = locText.split(',').map(p => p.trim());
+    if(parts.length !== 2){
+      alert("Please enter location in format: latitude,longitude");
+      return;
     }
-    
-    const nearestRecycling = Utils.findNearestCenter(coords.lat, coords.lng, RECYCLING_CENTERS);
-    const nearestPolyFuel = Utils.findNearestCenter(coords.lat, coords.lng, POLY_FUEL_CENTERS);
-    
+    const lat = parseFloat(parts[0]);
+    const lng = parseFloat(parts[1]);
+    if(isNaN(lat) || isNaN(lng)){
+      alert("Invalid coordinates.");
+      return;
+    }
+    let nearestRecycling = null;
+    let minDistRecycling = Infinity;
+    recyclingCenters.forEach(center => {
+      const dist = getDistance(lat, lng, center.lat, center.lng);
+      if(dist < minDistRecycling){
+        minDistRecycling = dist;
+        nearestRecycling = center;
+      }
+    });
+    let nearestPolyFuel = null;
+    let minDistPolyFuel = Infinity;
+    polyFuelCenters.forEach(center => {
+      const dist = getDistance(lat, lng, center.lat, center.lng);
+      if(dist < minDistPolyFuel){
+        minDistPolyFuel = dist;
+        nearestPolyFuel = center;
+      }
+    });
     const infoDiv = document.getElementById('nearestCentersInfo');
     infoDiv.innerHTML = `
-        <p><strong>Nearest Recycling Center:</strong> ${nearestRecycling ? `${nearestRecycling.center.name} (~${nearestRecycling.distance.toFixed(1)} km)` : 'None found'}</p>
-        <p><strong>Nearest PolyFuel Center:</strong> ${nearestPolyFuel ? `${nearestPolyFuel.center.name} (~${nearestPolyFuel.distance.toFixed(1)} km)` : 'None found'}</p>
+      <p><strong>Nearest Recycling Center:</strong> ${nearestRecycling ? `${nearestRecycling.name} (~${minDistRecycling.toFixed(1)} km)` : 'None found'}</p>
+      <p><strong>Nearest PolyFuel Center:</strong> ${nearestPolyFuel ? `${nearestPolyFuel.name} (~${minDistPolyFuel.toFixed(1)} km)` : 'None found'}</p>
     `;
-}
+  }
 
-function openScheduleModal(dateStr) {
+  function openScheduleModal(dateStr){
     document.getElementById('modalDate').textContent = dateStr;
     document.getElementById('scheduleModal').style.display = 'flex';
-    
-    const existing = AppState.scheduledCollections.find(s => s.date === dateStr);
-    if (existing) {
-        document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => {
-            cb.checked = existing.types.includes(cb.value);
-        });
+    const existing = scheduledCollections.find(s => s.date === dateStr);
+    if(existing){
+      document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => {
+        cb.checked = existing.types.includes(cb.value);
+      });
     } else {
-        document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => cb.checked = false);
+      document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => cb.checked = false);
     }
-}
+  }
 
-function saveSchedule() {
+  function saveSchedule(){
     const dateStr = document.getElementById('modalDate').textContent;
     const selectedTypes = Array.from(document.querySelectorAll('input[name="scheduleWasteTypes"]:checked')).map(cb => cb.value);
-    
-    if (selectedTypes.length === 0) {
-        Utils.showNotification("Please select at least one waste type.", 'warning');
-        return;
+    if(selectedTypes.length === 0){
+      alert("Please select at least one waste type.");
+      return;
     }
-    
-    const existingIndex = AppState.scheduledCollections.findIndex(s => s.date === dateStr);
-    if (existingIndex >= 0) {
-        AppState.scheduledCollections[existingIndex].types = selectedTypes;
+    const existingIndex = scheduledCollections.findIndex(s => s.date === dateStr);
+    if(existingIndex >= 0){
+      scheduledCollections[existingIndex].types = selectedTypes;
     } else {
-        AppState.scheduledCollections.push({date: dateStr, types: selectedTypes});
+      scheduledCollections.push({date: dateStr, types: selectedTypes});
     }
-    
-    AppState.save();
+    localStorage.setItem('scheduledCollections', JSON.stringify(scheduledCollections));
     closeScheduleModal();
     renderSchedule();
-}
+  }
 
-function clearSchedule() {
+  function clearSchedule(){
     const dateStr = document.getElementById('modalDate').textContent;
-    const existingIndex = AppState.scheduledCollections.findIndex(s => s.date === dateStr);
-    
-    if (existingIndex >= 0) {
-        AppState.scheduledCollections.splice(existingIndex, 1);
-        AppState.save();
+    const existingIndex = scheduledCollections.findIndex(s => s.date === dateStr);
+    if(existingIndex >= 0){
+      scheduledCollections.splice(existingIndex, 1);
+      localStorage.setItem('scheduledCollections', JSON.stringify(scheduledCollections));
     }
-    
     closeScheduleModal();
     renderSchedule();
-}
+  }
 
-function closeScheduleModal() {
+  function closeScheduleModal(){
     document.getElementById('scheduleModal').style.display = 'none';
-}
+  }
 
-function navigateTo(page) {
+  function navigateTo(page){
     const pages = {
-        'report': renderReport,
-        'booking': renderBooking,
-        'complaints': renderComplaints,
-        'schedule': renderSchedule,
-        'dashboard': renderDashboard,
-        'ridertracking': renderRiderTracking,
-        'about': () => { 
-            document.getElementById('pageContent').innerHTML = '<h2>About</h2><p>This is the Nirmal Waste Reporting App for waste management.</p>'; 
-        },
-        'profile': renderProfile
+      'report': renderReport,
+      'booking': renderBooking,
+      'complaints': renderComplaints,
+      'schedule': renderSchedule,
+      'dashboard': renderDashboard,
+      'ridertracking': renderRiderTracking,
+      'about': () => { document.getElementById('pageContent').innerHTML = '<h2>About</h2><p>This is the Eco Driver App for waste management.</p>'; },
+      'profile': renderProfile
     };
-    
-    if (pages[page]) {
-        pages[page]();
+    if(pages[page]){
+      pages[page]();
     }
-    
     // Update active nav button
     document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
     const activeBtn = document.querySelector(`nav button[onclick="navigateTo('${page}')"]`);
-    if (activeBtn) activeBtn.classList.add('active');
-}
+    if(activeBtn) activeBtn.classList.add('active');
+  }
 
   // Rider Tracking simulation only
   function renderRiderTracking() {
@@ -994,197 +992,133 @@ function navigateTo(page) {
     loadProfile();
   }
 
-function saveProfile() {
-    try {
-        const profile = {
-            name: document.getElementById('name').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            vehicle: document.getElementById('vehicle').value.trim()
-        };
-        
-        // Validate profile data
-        if (!profile.name || !profile.email) {
-            Utils.showNotification("Name and email are required.", 'error');
-            return;
-        }
-        
-        if (!Utils.validation.email(profile.email)) {
-            Utils.showNotification("Please enter a valid email address.", 'error');
-            return;
-        }
-        
-        Utils.storage.setItem('userProfile', profile);
-        document.getElementById('profileMessage').textContent = "Profile saved successfully.";
-        Utils.showNotification("Profile saved successfully.", 'success');
-        
-    } catch (error) {
-        console.error('Error saving profile:', error);
-        Utils.showNotification('An error occurred while saving the profile.', 'error');
+  function saveProfile(){
+    const profile = {
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      vehicle: document.getElementById('vehicle').value.trim()
+    };
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+    document.getElementById('profileMessage').textContent = "Profile saved successfully.";
+  }
+
+  function loadProfile(){
+    const profileStr = localStorage.getItem('userProfile');
+    if(profileStr){
+      const profile = JSON.parse(profileStr);
+      document.getElementById('name').value = profile.name || '';
+      document.getElementById('email').value = profile.email || '';
+      document.getElementById('phone').value = profile.phone || '';
+      document.getElementById('vehicle').value = profile.vehicle || '';
     }
-}
+  }
 
-function loadProfile() {
-    try {
-        const profile = Utils.storage.getItem('userProfile', {});
-        
-        document.getElementById('name').value = profile.name || '';
-        document.getElementById('email').value = profile.email || '';
-        document.getElementById('phone').value = profile.phone || '';
-        document.getElementById('vehicle').value = profile.vehicle || '';
-        
-    } catch (error) {
-        console.error('Error loading profile:', error);
-        Utils.showNotification('An error occurred while loading the profile.', 'error');
-    }
-}
+  function setupMaterialTypesSelect(){
+    // Assuming material types are predefined or fetched
+    // For simplicity, using static
+    const materialTypes = {
+      'wet': ['Organic Waste', 'Food Scraps'],
+      'dry': ['Paper', 'Plastic', 'Metal'],
+      'plastic': ['Bottles', 'Bags'],
+      'ewaste': ['Batteries', 'Wires'],
+      'nonveg': ['Meat', 'Bones'],
+      'hazardous': ['Chemicals', 'Paints']
+    };
+    // This function can be expanded
+  }
 
-function setupMaterialTypesSelect() {
-    // Material types are now defined in utils.js
-    // This function can be expanded for dynamic material type loading
-}
-
-function populateMaterialTypes(wasteId) {
+  function populateMaterialTypes(wasteId){
     const container = document.getElementById('materialTypesContainer');
     const materials = {
-        'wet': ['Organic Waste', 'Food Scraps'],
-        'dry': ['Paper', 'Plastic', 'Metal'],
-        'plastic': ['Bottles', 'Bags'],
-        'ewaste': ['Batteries', 'Wires'],
-        'nonveg': ['Meat', 'Bones'],
-        'hazardous': ['Chemicals', 'Paints']
+      'wet': ['Organic Waste', 'Food Scraps'],
+      'dry': ['Paper', 'Plastic', 'Metal'],
+      'plastic': ['Bottles', 'Bags'],
+      'ewaste': ['Batteries', 'Wires'],
+      'nonveg': ['Meat', 'Bones'],
+      'hazardous': ['Chemicals', 'Paints']
     };
-    
     const options = materials[wasteId] || [];
-    container.innerHTML = options.map(m => 
-        `<label><input type="checkbox" name="materialTypes" value="${m}" /> ${m}</label>`
-    ).join('<br/>');
-}
+    container.innerHTML = options.map(m => `<label><input type="checkbox" name="materialTypes" value="${m}" /> ${m}</label>`).join('<br/>');
+  }
 
-function validateForm() {
+  function validateForm(){
     const desc = document.getElementById('description').value.trim();
     const loc = document.getElementById('location').value.trim();
     const locType = document.querySelector('input[name="locationType"]:checked');
     const photoInput = document.getElementById('photoInput');
     const submitBtn = document.querySelector('#submitComplaintBtn');
-    
-    const isValid = AppState.selectedWasteType && desc && loc && locType && photoInput.files.length > 0;
+    const isValid = selectedWasteType && desc && loc && locType && photoInput.files.length > 0;
     submitBtn.disabled = !isValid;
-}
+  }
 
-function openSignInModal() {
+  function openSignInModal() {
     document.getElementById('signInModal').style.display = 'flex';
-}
+  }
 
-function closeModal() {
+  function closeModal() {
     document.getElementById('signInModal').style.display = 'none';
-}
+  }
 
-function switchTab(tab) {
+  function switchTab(tab) {
     const signInTab = document.getElementById('signInTab');
     const signUpTab = document.getElementById('signUpTab');
     const signInForm = document.getElementById('signInForm');
     const signUpForm = document.getElementById('signUpForm');
-    
     if (tab === 'signIn') {
-        signInTab.classList.add('active');
-        signUpTab.classList.remove('active');
-        signInForm.classList.add('active');
-        signUpForm.classList.remove('active');
+      signInTab.classList.add('active');
+      signUpTab.classList.remove('active');
+      signInForm.classList.add('active');
+      signUpForm.classList.remove('active');
     } else {
-        signUpTab.classList.add('active');
-        signInTab.classList.remove('active');
-        signUpForm.classList.add('active');
-        signInForm.classList.remove('active');
+      signUpTab.classList.add('active');
+      signInTab.classList.remove('active');
+      signUpForm.classList.add('active');
+      signInForm.classList.remove('active');
     }
-}
+  }
 
-function toggleRiderOptions() {
+  function toggleRiderOptions() {
     const role = document.getElementById('signUpRole').value;
     const riderOptions = document.getElementById('riderOptions');
-    
     if (role === 'rider') {
-        riderOptions.style.display = 'block';
+      riderOptions.style.display = 'block';
     } else {
-        riderOptions.style.display = 'none';
+      riderOptions.style.display = 'none';
     }
-}
+  }
 
-function signIn() {
+  function signIn() {
     const email = document.getElementById('signInEmail').value;
     const password = document.getElementById('signInPassword').value;
-    
     if (!email || !password) {
-        Utils.showNotification('Please fill in all fields.', 'warning');
-        return;
+      alert('Please fill in all fields.');
+      return;
     }
-    
-    Utils.showNotification('Sign In successful!', 'success');
+    alert('Sign In successful!');
     closeModal();
-}
+  }
 
-function signUp() {
+  function signUp() {
     const name = document.getElementById('signUpName').value;
     const email = document.getElementById('signUpEmail').value;
     const password = document.getElementById('signUpPassword').value;
     const role = document.getElementById('signUpRole').value;
     const riderType = document.getElementById('riderType').value;
-    
     if (!name || !email || !password || !role) {
-        Utils.showNotification('Please fill in all fields.', 'warning');
-        return;
+      alert('Please fill in all fields.');
+      return;
     }
-    
     if (role === 'rider' && !riderType) {
-        Utils.showNotification('Please select rider type.', 'warning');
-        return;
+      alert('Please select rider type.');
+      return;
     }
-    
-    Utils.showNotification('Sign Up successful!', 'success');
+    alert('Sign Up successful!');
     closeModal();
-}
+  }
 
-// Event listener cleanup management
-const EventManager = {
-    listeners: new Map(),
-    
-    add(element, event, handler, options = {}) {
-        if (!this.listeners.has(element)) {
-            this.listeners.set(element, []);
-        }
-        
-        element.addEventListener(event, handler, options);
-        this.listeners.get(element).push({ event, handler, options });
-    },
-    
-    removeAll(element) {
-        if (this.listeners.has(element)) {
-            const elementListeners = this.listeners.get(element);
-            elementListeners.forEach(({ event, handler, options }) => {
-                element.removeEventListener(event, handler, options);
-            });
-            this.listeners.delete(element);
-        }
-    },
-    
-    cleanup() {
-        this.listeners.forEach((listeners, element) => {
-            listeners.forEach(({ event, handler, options }) => {
-                element.removeEventListener(event, handler, options);
-            });
-        });
-        this.listeners.clear();
-    }
-};
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', () => {
+  // Initialize the app
+  document.addEventListener('DOMContentLoaded', () => {
     navigateTo('report'); // Default page
-});
-
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-    EventManager.cleanup();
-});
-
+  });
 
