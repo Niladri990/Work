@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ConservencyDriver</title>
+<link rel="stylesheet" href="css/ConservancyRider.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css" />
+<script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+</head>
+<body>
+
+<header>
+  <h1>Conservency Driver</h1>
+  <button id="notificationBtn" aria-label="Notifications" title="Notifications" onclick="toggleNotificationPanel()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4a1.5 1.5 0 0 0-3 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+    </svg>
+    <span id="notificationBadge" style="display:none;">0</span>
+  </button>
+  <button id="onlineToggle" onclick="toggleOnlineStatus()" aria-pressed="false">Go Online</button>
+  <button id="profileBtn" onclick="window.location.href='profile.html'" aria-label="Profile" title="Profile">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    </svg>
+    Profile
+  </button>
+</header>
+
+<nav>
+  <button class="active" onclick="navigateTo('home')">Home</button>
+  <button onclick="navigateTo('earnings')">Earnings</button>
+  <button onclick="navigateTo('trips')">Trips</button>
+</nav>
+
+<main class="container" id="pageContent">
+  <!-- Dynamic content loads here -->
+</main>
+
+<div id="notificationPanel" role="region" aria-live="polite" aria-label="Notifications">
+  <h3>Notifications</h3>
+  <ul id="notificationList" tabindex="0">
+    <!-- Notifications will be dynamically inserted here -->
+  </ul>
+</div>
+<script src="js/ConservancyRider.js"></script>
+</body>
+</html>

@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const redirectMap = {
             'greenCenter': 'GreenCenter.html',
             'ngo': 'NGO.html',
-            'conservency': 'GreenCenter.html',
+            'conservency': 'ConservancyMonitor.html',
             'rider': 'User.html',
             'user': 'User.html'
         };
