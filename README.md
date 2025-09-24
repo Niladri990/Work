@@ -92,3 +92,14 @@ Currently, API calls are mocked; no server is required.
  | Conservency  | admin@conservency.com | password123 | Reg: CONS001      |
  | Rider (NGO)  | rider@ngo.com         | password123 | Type: NGO Rider   |
  | User         | user@test.com         | password123 | Regular user      |
+ --------------------------------------------------------------------------
+ ## 👥 Contributors
+
+Thanks to everyone who has contributed to this project!
+
+| Name            | GitHub Username      | Role/Contribution         |
+|-----------------|---------------------|--------------------------|
+| Nirmal          | [@yourusername](https://github.com/yourusername) | Creator, Maintainer      |
+| Your Name Here  | [@contributor](https://github.com/contributor)   | Feature development, Docs|
+
+Want to contribute? Open an issue or submit a pull request!
