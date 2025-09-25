@@ -112,16 +112,36 @@ document.addEventListener('DOMContentLoaded', function() {
         const { email, password, userType, riderType } = formData;
         
         try {
-            // Mock authentication - check if user exists in localStorage
-            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-            const user = users.find(u => u.email === email && u.password === password && u.userType === userType);
+            // Call backend API for authentication
+            const response = await fetch(`${API_BASE}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    userType: userType,
+                    riderType: riderType
+                })
+            });
             
-            if (!user) {
-                throw new Error('Invalid email, password, or user type.');
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Authentication failed');
             }
             
-            // Store user data
-            storeUserData(email, userType, riderType);
+            // Store JWT token and user data
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('userEmail', data.email);
+            localStorage.setItem('userType', data.userType);
+            localStorage.setItem('userId', data.userId);
+            
+            if (data.riderType) {
+                localStorage.setItem('riderType', data.riderType);
+            }
             
             // Redirect based on user type
             redirectUser(userType, riderType);

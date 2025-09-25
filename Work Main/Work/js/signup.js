@@ -146,34 +146,43 @@ document.addEventListener('DOMContentLoaded', function() {
         const { email, password, userType, riderType, regNumber, ownerName, conservencyRegNumber, conservencyOwnerName } = formData;
         
         try {
-            // Check if user already exists
-            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-            const existingUser = users.find(u => u.email === email);
+            // Call backend API for registration
+            const response = await fetch(`${API_BASE}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    confirmPassword: password,
+                    userType: userType,
+                    riderType: riderType,
+                    regNumber: regNumber,
+                    ownerName: ownerName,
+                    conservancyRegNumber: conservencyRegNumber,
+                    conservancyOwnerName: conservencyOwnerName
+                })
+            });
             
-            if (existingUser) {
-                throw new Error('User with this email already exists.');
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Registration failed');
             }
             
-            // Create new user object
-            const newUser = {
-                id: Date.now(),
-                email,
-                password,
-                userType,
-                riderType: userType === 'rider' ? riderType : null,
-                regNumber: (userType === 'greenCenter' || userType === 'ngo') ? regNumber : null,
-                ownerName: (userType === 'greenCenter' || userType === 'ngo') ? ownerName : null,
-                conservencyRegNumber: userType === 'conservency' ? conservencyRegNumber : null,
-                conservencyOwnerName: userType === 'conservency' ? conservencyOwnerName : null,
-                createdAt: new Date().toISOString()
-            };
+            // Store JWT token and user data
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('userEmail', data.email);
+            localStorage.setItem('userType', data.userType);
+            localStorage.setItem('userId', data.userId);
             
-            // Add user to localStorage
-            users.push(newUser);
-            localStorage.setItem('registeredUsers', JSON.stringify(users));
+            if (data.riderType) {
+                localStorage.setItem('riderType', data.riderType);
+            }
             
-            // Auto-login after successful signup
-            storeUserData(email, userType, riderType);
+            // Redirect based on user type
             redirectUser(userType);
             
         } catch (error) {

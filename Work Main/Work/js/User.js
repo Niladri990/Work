@@ -195,7 +195,7 @@
     });
   }
 
-  function submitComplaint(){
+  async function submitComplaint(){
     const descVal = document.getElementById('description').value.trim();
     const locVal = document.getElementById('location').value.trim();
     const photoInput = document.getElementById('photoInput');
@@ -212,62 +212,99 @@
     }
 
     const photoNames = Array.from(photoInput.files).map(f => f.name).join(', ');
+    const token = localStorage.getItem('token');
 
-    const complaint = {
-      id: Date.now(),
-      type: selectedWasteType,
-      materials: selectedMaterials,
-      locationType: locType.value,
-      description: descVal,
-      location: locVal,
-      photo: photoNames || null,
-      status: 'Pending',
-      date: new Date().toLocaleString()
-    };
-    complaints.push(complaint);
+    try {
+      const response = await fetch('http://localhost:8080/api/complaints', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          wasteType: selectedWasteType,
+          materials: selectedMaterials,
+          locationType: locType.value,
+          description: descVal,
+          location: locVal,
+          photoNames: photoNames || null
+        })
+      });
 
-    alert("Complaint submitted successfully.");
-    selectedWasteType = null;
+      const data = await response.json();
 
-    // Offer to schedule a collection for the reported waste type
-    if (confirm("Would you like to schedule a collection for this waste type?")) {
-      navigateTo('schedule');
-      // Open modal for today's date and pre-select the waste type
-      const today = new Date().toISOString().split('T')[0];
-      openScheduleModal(today);
-      // Pre-select the waste type after a short delay to ensure modal is rendered
-      setTimeout(() => {
-        const cb = document.querySelector(`input[name="scheduleWasteTypes"][value="${complaint.type}"]`);
-        if (cb) cb.checked = true;
-      }, 100);
-    } else {
-      navigateTo('complaints');
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit complaint');
+      }
+
+      alert("Complaint submitted successfully.");
+      selectedWasteType = null;
+
+      // Offer to schedule a collection for the reported waste type
+      if (confirm("Would you like to schedule a collection for this waste type?")) {
+        navigateTo('schedule');
+        // Open modal for today's date and pre-select the waste type
+        const today = new Date().toISOString().split('T')[0];
+        openScheduleModal(today);
+        // Pre-select the waste type after a short delay to ensure modal is rendered
+        setTimeout(() => {
+          const cb = document.querySelector(`input[name="scheduleWasteTypes"][value="${selectedWasteType}"]`);
+          if (cb) cb.checked = true;
+        }, 100);
+      } else {
+        navigateTo('complaints');
+      }
+    } catch (error) {
+      console.error('Error submitting complaint:', error);
+      alert('Failed to submit complaint: ' + error.message);
     }
   }
 
-  function renderComplaints(){
+  async function renderComplaints(){
+    const token = localStorage.getItem('token');
     let html = `<h2>My Complaints</h2>`;
-    if(complaints.length === 0){
-      html += `<p>No complaints submitted yet.</p>`;
-    } else {
-      html += '<ul style="list-style:none; padding-left:0;">';
-      complaints.forEach(c => {
-        const waste = wasteTypes.find(w => w.id === c.type);
-        const materialsList = c.materials ? c.materials.join(', ') : '';
-        html += `<li style="margin-bottom: 1rem; padding:1rem; border:1px solid var(--border-color); border-radius: var(--border-radius); background:#f9f9f9; box-shadow: var(--shadow);">
-          <img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle"/>
-          <strong> ${waste.name}</strong> (${c.locationType})<br/>
-          <strong>Materials:</strong> ${materialsList}<br/>
-          <strong>Description:</strong> ${c.description}<br/>
-          <strong>Location:</strong> ${c.location}<br/>
-          <strong>Date:</strong> ${c.date}<br/>
-        <strong>Status:</strong> ${c.status}
-        ${c.photo ? `<br/><strong>Photo(s):</strong> ${c.photo}` : ''}
-        ${c.status === 'Pending' ? `<br/><em>Expected resolution date/time: ${c.date}</em>` : ''}
-      </li>`;
+    
+    try {
+      const response = await fetch('http://localhost:8080/api/complaints', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
-      html += '</ul>';
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch complaints');
+      }
+
+      if(data.length === 0){
+        html += `<p>No complaints submitted yet.</p>`;
+      } else {
+        html += '<ul style="list-style:none; padding-left:0;">';
+        data.forEach(c => {
+          const waste = wasteTypes.find(w => w.id === c.wasteType);
+          const materialsList = c.materials ? c.materials.join(', ') : '';
+          const date = new Date(c.createdAt).toLocaleString();
+          html += `<li style="margin-bottom: 1rem; padding:1rem; border:1px solid var(--border-color); border-radius: var(--border-radius); background:#f9f9f9; box-shadow: var(--shadow);">
+            <img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle"/>
+            <strong> ${waste.name}</strong> (${c.locationType})<br/>
+            <strong>Materials:</strong> ${materialsList}<br/>
+            <strong>Description:</strong> ${c.description}<br/>
+            <strong>Location:</strong> ${c.location}<br/>
+            <strong>Date:</strong> ${date}<br/>
+          <strong>Status:</strong> ${c.status}
+          ${c.photoNames ? `<br/><strong>Photo(s):</strong> ${c.photoNames}` : ''}
+          ${c.status === 'PENDING' ? `<br/><em>Expected resolution date/time: ${date}</em>` : ''}
+        </li>`;
+        });
+        html += '</ul>';
+      }
+    } catch (error) {
+      console.error('Error fetching complaints:', error);
+      html += `<p style="color: red;">Error loading complaints: ${error.message}</p>`;
     }
+    
     document.getElementById('pageContent').innerHTML = html;
   }
 
@@ -381,45 +418,97 @@
       submitBtn.disabled = !(locTypeChecked && sd && ed && freq && (ed >= sd) && wasteTypesChecked && pickupLocation);
     }
 
-    bookingForm.addEventListener('submit', e => {
+    bookingForm.addEventListener('submit', async e => {
       e.preventDefault();
+      const token = localStorage.getItem('token');
+      
       const bookingData = {
-        id: Date.now(),
         locationType: bookingForm.querySelector('input[name="locationTypeBooking"]:checked').value,
         pickupLocation: document.getElementById('pickupLocation').value.trim(),
         startDate: startDateInput.value,
         endDate: endDateInput.value,
         frequency: bookingForm.frequency.value,
         wasteTypes: Array.from(bookingForm.querySelectorAll('input[name="bookingWasteTypes"]:checked')).map(cb => cb.value),
-        remarks: document.getElementById('remarks').value.trim(),
-        date: new Date().toLocaleString()
+        remarks: document.getElementById('remarks').value.trim()
       };
-      bookings.push(bookingData);
-      localStorage.setItem('bookings', JSON.stringify(bookings));
-      alert("Conservancy service booked successfully!");
-      bookingForm.reset();
-      submitBtn.disabled = true;
-      document.getElementById('pickupLocation').value = '';
-      // Optionally, update schedule calendar if visible
-      if (document.querySelector('#calendar')) {
-        renderSchedule();
+      
+      try {
+        const response = await fetch('http://localhost:8080/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(bookingData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to create booking');
+        }
+
+        alert("Conservancy service booked successfully!");
+        bookingForm.reset();
+        submitBtn.disabled = true;
+        document.getElementById('pickupLocation').value = '';
+        
+        // Optionally, update schedule calendar if visible
+        if (document.querySelector('#calendar')) {
+          renderSchedule();
+        }
+      } catch (error) {
+        console.error('Error creating booking:', error);
+        alert('Failed to book service: ' + error.message);
       }
     });
   }
 
-  function renderSchedule(){
+  async function renderSchedule(){
     const monthName = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' });
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
 
-    const storedSchedules = localStorage.getItem('scheduledCollections');
-    if(storedSchedules){
-      scheduledCollections = JSON.parse(storedSchedules);
-    }
-
-    const storedBookings = localStorage.getItem('bookings');
-    if(storedBookings){
-      bookings = JSON.parse(storedBookings);
+    const token = localStorage.getItem('token');
+    
+    try {
+      // Fetch schedules from backend
+      const schedulesResponse = await fetch('http://localhost:8080/api/schedules', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (schedulesResponse.ok) {
+        const schedules = await schedulesResponse.json();
+        scheduledCollections = schedules.map(s => ({
+          date: s.scheduleDate,
+          types: s.wasteTypes
+        }));
+      }
+      
+      // Fetch bookings from backend
+      const bookingsResponse = await fetch('http://localhost:8080/api/bookings', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (bookingsResponse.ok) {
+        const bookingsData = await bookingsResponse.json();
+        bookings = bookingsData.map(b => ({
+          startDate: b.startDate,
+          endDate: b.endDate,
+          wasteTypes: b.wasteTypes
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching schedules/bookings:', error);
+      // Fallback to empty arrays
+      scheduledCollections = [];
+      bookings = [];
     }
 
 console.log('renderSchedule called for', monthName, currentYear);
@@ -751,46 +840,113 @@ console.log('renderSchedule called for', monthName, currentYear);
     `;
   }
 
-  function openScheduleModal(dateStr){
+  async function openScheduleModal(dateStr){
     document.getElementById('modalDate').textContent = dateStr;
     document.getElementById('scheduleModal').style.display = 'flex';
-    const existing = scheduledCollections.find(s => s.date === dateStr);
-    if(existing){
-      document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => {
-        cb.checked = existing.types.includes(cb.value);
+    
+    const token = localStorage.getItem('token');
+    
+    try {
+      // Fetch schedules to find existing one for this date
+      const response = await fetch('http://localhost:8080/api/schedules', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
-    } else {
+      
+      if (response.ok) {
+        const schedules = await response.json();
+        const existing = schedules.find(s => s.scheduleDate === dateStr);
+        
+        if(existing){
+          document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => {
+            cb.checked = existing.wasteTypes.includes(cb.value);
+          });
+        } else {
+          document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => cb.checked = false);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching schedules for modal:', error);
+      // Fallback to unchecked
       document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => cb.checked = false);
     }
   }
 
-  function saveSchedule(){
+  async function saveSchedule(){
     const dateStr = document.getElementById('modalDate').textContent;
     const selectedTypes = Array.from(document.querySelectorAll('input[name="scheduleWasteTypes"]:checked')).map(cb => cb.value);
     if(selectedTypes.length === 0){
       alert("Please select at least one waste type.");
       return;
     }
-    const existingIndex = scheduledCollections.findIndex(s => s.date === dateStr);
-    if(existingIndex >= 0){
-      scheduledCollections[existingIndex].types = selectedTypes;
-    } else {
-      scheduledCollections.push({date: dateStr, types: selectedTypes});
+    
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch('http://localhost:8080/api/schedules', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          scheduleDate: dateStr,
+          wasteTypes: selectedTypes
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to save schedule');
+      }
+
+      closeScheduleModal();
+      renderSchedule();
+    } catch (error) {
+      console.error('Error saving schedule:', error);
+      alert('Failed to save schedule: ' + error.message);
     }
-    localStorage.setItem('scheduledCollections', JSON.stringify(scheduledCollections));
-    closeScheduleModal();
-    renderSchedule();
   }
 
-  function clearSchedule(){
+  async function clearSchedule(){
     const dateStr = document.getElementById('modalDate').textContent;
-    const existingIndex = scheduledCollections.findIndex(s => s.date === dateStr);
-    if(existingIndex >= 0){
-      scheduledCollections.splice(existingIndex, 1);
-      localStorage.setItem('scheduledCollections', JSON.stringify(scheduledCollections));
+    const token = localStorage.getItem('token');
+    
+    try {
+      // First, get the schedule ID for this date
+      const response = await fetch('http://localhost:8080/api/schedules', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const schedules = await response.json();
+      const scheduleToDelete = schedules.find(s => s.scheduleDate === dateStr);
+      
+      if (scheduleToDelete) {
+        const deleteResponse = await fetch(`http://localhost:8080/api/schedules/${scheduleToDelete.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!deleteResponse.ok) {
+          const errorData = await deleteResponse.json();
+          throw new Error(errorData.message || 'Failed to delete schedule');
+        }
+      }
+      
+      closeScheduleModal();
+      renderSchedule();
+    } catch (error) {
+      console.error('Error clearing schedule:', error);
+      alert('Failed to clear schedule: ' + error.message);
     }
-    closeScheduleModal();
-    renderSchedule();
   }
 
   function closeScheduleModal(){
