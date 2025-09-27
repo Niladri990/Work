@@ -1,130 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Nirmal - Waste Reporting</title>
-<link rel="stylesheet" href="css/User.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css" />
-<script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nirmal - Waste Reporting</title>
+    <link rel="stylesheet" href="css/User.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 </head>
 <body>
-
+<!--Comment bc i can't push, delete it  -->
 <header>
-  <h1>Nirmal - Waste Reporting</h1>
-  <button id="profileBtn" onclick="navigateTo('profile')" aria-label="User Profile">
-    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-    </svg>
-    Profile
-  </button>
+    <h1 style="accent-color: #6c757d">Nirmal - Waste Reporting</h1>
+    <button id="profileBtn" onclick="navigateTo('profile')" aria-label="User Profile">
+        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        Profile
+    </button>
 </header>
 
-  <nav>
-    <button onclick="navigateTo('about')">About</button>
+<nav>
+
+    <button onclick="navigateTo('dashboard')">Dashboard</button>
     <button class="active" onclick="navigateTo('report')">Report Issue</button>
     <button onclick="navigateTo('booking')">Booking</button>
     <button onclick="navigateTo('complaints')">My Complaints</button>
     <button onclick="navigateTo('schedule')">Schedule</button>
-    <button onclick="navigateTo('dashboard')">Dashboard</button>
-    <button onclick="navigateTo('ridertracking')">Rider Tracking</button>
-  </nav>
 
-  <main class="container" id="pageContent">
-  <!-- Dynamically loaded content -->
+    <button onclick="navigateTo('ridertracking')">Rider Tracking</button>
+    <button onclick="navigateTo('about')">About</button>
+</nav>
+
+<main class="container" id="pageContent">
+    <!-- Dynamically loaded content -->
 </main>
 
 <!-- Sign In/Sign Up Modal -->
 <div id="signInModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-tabs">
-      <button id="signInTab" class="tab-btn active" onclick="switchTab('signIn')">Sign In</button>
-      <button id="signUpTab" class="tab-btn" onclick="switchTab('signUp')">Sign Up</button>
+    <div class="modal-content">
+        <div class="modal-tabs">
+            <button id="signInTab" class="tab-btn active" onclick="switchTab('signIn')">Sign In</button>
+            <button id="signUpTab" class="tab-btn" onclick="switchTab('signUp')">Sign Up</button>
+        </div>
+        <div id="signInForm" class="tab-content active">
+            <h2>Sign In</h2>
+            <div class="form-group">
+                <label for="signInEmail">Email</label>
+                <input type="email" id="signInEmail" required />
+            </div>
+            <div class="form-group">
+                <label for="signInPassword">Password</label>
+                <input type="password" id="signInPassword" required />
+            </div>
+            <div class="btn-container">
+                <button onclick="signIn()" class="submit-btn">Sign In</button>
+                <button onclick="closeModal()" class="submit-btn" style="background-color: #6c757d;">Cancel</button>
+            </div>
+        </div>
+        <div id="signUpForm" class="tab-content">
+            <h2>Sign Up</h2>
+            <div class="form-group">
+                <label for="signUpName">Name</label>
+                <input type="text" id="signUpName" required />
+            </div>
+            <div class="form-group">
+                <label for="signUpEmail">Email</label>
+                <input type="email" id="signUpEmail" required />
+            </div>
+            <div class="form-group">
+                <label for="signUpPassword">Password</label>
+                <input type="password" id="signUpPassword" required />
+            </div>
+            <div class="form-group">
+                <label for="signUpRole">Role</label>
+                <select id="signUpRole" onchange="toggleRiderOptions()" required>
+                    <option value="" disabled selected>Select Role</option>
+                    <option value="user">User</option>
+                    <option value="rider">Rider</option>
+                </select>
+            </div>
+            <div id="riderOptions" class="rider-options">
+                <label for="riderType">Rider Type</label>
+                <select id="riderType">
+                    <option value="" disabled selected>Select Rider Type</option>
+                    <option value="ngo">NGO Rider</option>
+                    <option value="conservancy">Conservancy Rider</option>
+                </select>
+            </div>
+            <div class="btn-container">
+                <button onclick="signUp()" class="submit-btn">Sign Up</button>
+                <button onclick="closeModal()" class="submit-btn" style="background-color: #6c757d;">Cancel</button>
+            </div>
+        </div>
     </div>
-    <div id="signInForm" class="tab-content active">
-      <h2>Sign In</h2>
-      <div class="form-group">
-        <label for="signInEmail">Email</label>
-        <input type="email" id="signInEmail" required />
-      </div>
-      <div class="form-group">
-        <label for="signInPassword">Password</label>
-        <input type="password" id="signInPassword" required />
-      </div>
-      <div class="btn-container">
-        <button onclick="signIn()" class="submit-btn">Sign In</button>
-        <button onclick="closeModal()" class="submit-btn" style="background-color: #6c757d;">Cancel</button>
-      </div>
-    </div>
-    <div id="signUpForm" class="tab-content">
-      <h2>Sign Up</h2>
-      <div class="form-group">
-        <label for="signUpName">Name</label>
-        <input type="text" id="signUpName" required />
-      </div>
-      <div class="form-group">
-        <label for="signUpEmail">Email</label>
-        <input type="email" id="signUpEmail" required />
-      </div>
-      <div class="form-group">
-        <label for="signUpPassword">Password</label>
-        <input type="password" id="signUpPassword" required />
-      </div>
-      <div class="form-group">
-        <label for="signUpRole">Role</label>
-        <select id="signUpRole" onchange="toggleRiderOptions()" required>
-          <option value="" disabled selected>Select Role</option>
-          <option value="user">User</option>
-          <option value="rider">Rider</option>
-        </select>
-      </div>
-      <div id="riderOptions" class="rider-options">
-        <label for="riderType">Rider Type</label>
-        <select id="riderType">
-          <option value="" disabled selected>Select Rider Type</option>
-          <option value="ngo">NGO Rider</option>
-          <option value="conservancy">Conservancy Rider</option>
-        </select>
-      </div>
-      <div class="btn-container">
-        <button onclick="signUp()" class="submit-btn">Sign Up</button>
-        <button onclick="closeModal()" class="submit-btn" style="background-color: #6c757d;">Cancel</button>
-      </div>
-    </div>
-  </div>
 </div>
 <script src="js/User.js"></script>
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
