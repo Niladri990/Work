@@ -1,5 +1,5 @@
 // User.js - JavaScript for User Interface
-const wasteTypes = [
+  const wasteTypes = [
     {id:'wet', name:'Wet Waste', icon:'https://img.icons8.com/ios-filled/50/004085/wet.png', category:'biodegradable'},
     {id:'dry', name:'Dry Waste', icon:'https://img.icons8.com/ios-filled/50/004085/empty-box.png', category:'non-biodegradable'},
     {id:'plastic', name:'Plastic Waste', icon:'https://img.icons8.com/ios-filled/50/004085/plastic.png', category:'non-biodegradable'},
@@ -7,28 +7,28 @@ const wasteTypes = [
     {id:'nonveg', name:'Non-Veg Waste', icon:'https://freesvg.org/img/1531813245.png', category:'biodegradable'},
     {id:'medical', name:'Medical Waste', icon:'https://static.vecteezy.com/system/resources/previews/023/810/321/original/yellow-triangle-biohazard-sign-free-vector.jpg', category:'non-biodegradable'},
     {id:'hazardous', name:'Hazardous Waste', icon:'https://tse1.mm.bing.net/th/id/OIP.2oCpxXrQyDdgQhe0AWNRhgAAAA?r=0&w=416&h=416&rs=1&pid=ImgDetMain&o=7&rm=3', category:'non-biodegradable'},
-];
+  ];
 
-const recyclingCenters = [
+  const recyclingCenters = [
     {name: "Sunrise Recycling Center", lat: 28.6448, lng: 77.2167},
     {name: "GreenEarth Waste Processing", lat: 28.5355, lng: 77.3910},
     {name: "EcoCycle Hub", lat: 28.4089, lng: 77.3178},
-];
+  ];
 
-const polyFuelCenters = [
+  const polyFuelCenters = [
     {name: "PolyFuel Plant A", lat: 28.7041, lng: 77.1025},
     {name: "PolyFuel Plant B", lat: 28.6139, lng: 77.2090},
-];
+  ];
 
-let complaints = [];
-let scheduledCollections = [];
-let bookings = [];
-let currentYear = new Date().getFullYear();
-let currentMonth = new Date().getMonth();
-let selectedWasteType = null;
+  let complaints = [];
+  let scheduledCollections = [];
+  let bookings = [];
+  let currentYear = new Date().getFullYear();
+  let currentMonth = new Date().getMonth();
+  let selectedWasteType = null;
 
-// Render Report page
-function renderReport(){
+  // Render Report page
+  function renderReport(){
     const wasteOptionsHtml = wasteTypes.map(wt => `
       <div class="dropdown-item" data-id="${wt.id}">
         <img src="${wt.icon}" alt="${wt.name} icon" style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"/><span>${wt.name}</span>
@@ -100,9 +100,9 @@ function renderReport(){
     document.getElementById('pageContent').innerHTML = html;
     setupReportForm();
     setupMaterialTypesSelect();
-}
+  }
 
-function setupReportForm(){
+  function setupReportForm(){
     const dropdown = document.getElementById('wasteTypeDropdown');
     const toggle = dropdown.querySelector('.dropdown-toggle');
     const menu = dropdown.querySelector('.dropdown-menu');
@@ -111,53 +111,53 @@ function setupReportForm(){
     const photoInput = document.getElementById('photoInput');
 
     toggle.addEventListener('click', () => {
-        const expanded = toggle.getAttribute('aria-expanded') === 'true' ? 'false' : 'true';
-        toggle.setAttribute('aria-expanded', expanded);
-        menu.classList.toggle('show');
+      const expanded = toggle.getAttribute('aria-expanded') === 'true' ? 'false' : 'true';
+      toggle.setAttribute('aria-expanded', expanded);
+      menu.classList.toggle('show');
     });
 
     document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target)) {
-            menu.classList.remove('show');
-            toggle.setAttribute('aria-expanded', 'false');
-        }
+      if (!dropdown.contains(e.target)) {
+        menu.classList.remove('show');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
     });
 
     menu.querySelectorAll('.dropdown-item').forEach(item => {
-        item.addEventListener('click', () => {
-            selectedWasteType = item.getAttribute('data-id');
-            const waste = wasteTypes.find(w => w.id === selectedWasteType);
-            selectionSpan.innerHTML = `<img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"/> ${waste.name}`;
-            menu.classList.remove('show');
-            toggle.setAttribute('aria-expanded', 'false');
-            populateMaterialTypes(selectedWasteType);
-            validateForm();
-        });
+      item.addEventListener('click', () => {
+        selectedWasteType = item.getAttribute('data-id');
+        const waste = wasteTypes.find(w => w.id === selectedWasteType);
+        selectionSpan.innerHTML = `<img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle; margin-right: 8px;"/> ${waste.name}`;
+        menu.classList.remove('show');
+        toggle.setAttribute('aria-expanded', 'false');
+        populateMaterialTypes(selectedWasteType);
+        validateForm();
+      });
     });
 
     photoInput.addEventListener('change', () => {
-        if(photoInput.files.length > 0){
-            uploadBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="white" height="20" width="20" viewBox="0 0 24 24"><path d="M12 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1z"/></svg> Upload (${photoInput.files.length} photo${photoInput.files.length>1?'s':''})`;
-        } else {
-            uploadBtn.innerHTML = `<label for="photoInput" style="display:flex; align-items:center; cursor:pointer; gap:0.4rem; margin:0;"><svg xmlns="http://www.w3.org/2000/svg" fill="white" height="20" width="20" viewBox="0 0 24 24"><path d="M12 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1z"/></svg> Upload Photo</label>`;
-        }
-        validateForm();
+      if(photoInput.files.length > 0){
+        uploadBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="white" height="20" width="20" viewBox="0 0 24 24"><path d="M12 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1z"/></svg> Upload (${photoInput.files.length} photo${photoInput.files.length>1?'s':''})`;
+      } else {
+        uploadBtn.innerHTML = `<label for="photoInput" style="display:flex; align-items:center; cursor:pointer; gap:0.4rem; margin:0;"><svg xmlns="http://www.w3.org/2000/svg" fill="white" height="20" width="20" viewBox="0 0 24 24"><path d="M12 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1z"/></svg> Upload Photo</label>`;
+      }
+      validateForm();
     });
 
     document.getElementById('description').addEventListener('input', validateForm);
     document.getElementById('location').addEventListener('input', () => {
-        validateForm();
-        updateNearestCenter();
+      validateForm();
+      updateNearestCenter();
     });
     document.querySelectorAll('input[name="locationType"]').forEach(radio => radio.addEventListener('change', validateForm));
 
     document.getElementById('reportForm').addEventListener('submit', e => {
-        e.preventDefault();
-        submitComplaint();
+      e.preventDefault();
+      submitComplaint();
     });
-}
+  }
 
-async function submitComplaint(){
+  async function submitComplaint(){
     const descVal = document.getElementById('description').value.trim();
     const locVal = document.getElementById('location').value.trim();
     const photoInput = document.getElementById('photoInput');
@@ -165,90 +165,90 @@ async function submitComplaint(){
     const selectedMaterials = Array.from(document.querySelectorAll('input[name="materialTypes"]:checked')).map(cb => cb.value);
 
     if(!selectedWasteType || !descVal || !locVal || !locType){
-        alert("Please fill all mandatory fields.");
-        return;
+      alert("Please fill all mandatory fields.");
+      return;
     }
     if(selectedMaterials.length === 0){
-        alert("Please select at least one material type.");
-        return;
+      alert("Please select at least one material type.");
+      return;
     }
 
     const photoNames = Array.from(photoInput.files).map(f => f.name).join(', ');
     const token = localStorage.getItem('token');
 
     try {
-        const response = await fetch('http://localhost:8080/api/complaints', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                wasteType: selectedWasteType,
-                materials: selectedMaterials,
-                locationType: locType.value,
-                description: descVal,
-                location: locVal,
-                photoNames: photoNames || null
-            })
-        });
+      const response = await fetch('http://localhost:8080/api/complaints', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          wasteType: selectedWasteType,
+          materials: selectedMaterials,
+          locationType: locType.value,
+          description: descVal,
+          location: locVal,
+          photoNames: photoNames || null
+        })
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to submit complaint');
-        }
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit complaint');
+      }
 
-        alert("Complaint submitted successfully.");
-        selectedWasteType = null;
+      alert("Complaint submitted successfully.");
+      selectedWasteType = null;
 
-        // Offer to schedule a collection for the reported waste type
-        if (confirm("Would you like to schedule a collection for this waste type?")) {
-            navigateTo('schedule');
-            // Open modal for today's date and pre-select the waste type
-            const today = new Date().toISOString().split('T')[0];
-            openScheduleModal(today);
-            // Pre-select the waste type after a short delay to ensure modal is rendered
-            setTimeout(() => {
-                const cb = document.querySelector(`input[name="scheduleWasteTypes"][value="${selectedWasteType}"]`);
-                if (cb) cb.checked = true;
-            }, 100);
-        } else {
-            navigateTo('complaints');
-        }
+      // Offer to schedule a collection for the reported waste type
+      if (confirm("Would you like to schedule a collection for this waste type?")) {
+        navigateTo('schedule');
+        // Open modal for today's date and pre-select the waste type
+        const today = new Date().toISOString().split('T')[0];
+        openScheduleModal(today);
+        // Pre-select the waste type after a short delay to ensure modal is rendered
+        setTimeout(() => {
+          const cb = document.querySelector(`input[name="scheduleWasteTypes"][value="${selectedWasteType}"]`);
+          if (cb) cb.checked = true;
+        }, 100);
+      } else {
+        navigateTo('complaints');
+      }
     } catch (error) {
-        console.error('Error submitting complaint:', error);
-        alert('Failed to submit complaint: ' + error.message);
+      console.error('Error submitting complaint:', error);
+      alert('Failed to submit complaint: ' + error.message);
     }
-}
+  }
 
-async function renderComplaints(){
+  async function renderComplaints(){
     const token = localStorage.getItem('token');
     let html = `<h2>My Complaints</h2>`;
-
+    
     try {
-        const response = await fetch('http://localhost:8080/api/complaints', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to fetch complaints');
+      const response = await fetch('http://localhost:8080/api/complaints', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
+      });
 
-        if(data.length === 0){
-            html += `<p>No complaints submitted yet.</p>`;
-        } else {
-            html += '<ul style="list-style:none; padding-left:0;">';
-            data.forEach(c => {
-                const waste = wasteTypes.find(w => w.id === c.wasteType);
-                const materialsList = c.materials ? c.materials.join(', ') : '';
-                const date = new Date(c.createdAt).toLocaleString();
-                html += `<li style="margin-bottom: 1rem; padding:1rem; border:1px solid var(--border-color); border-radius: var(--border-radius); background:#f9f9f9; box-shadow: var(--shadow);">
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch complaints');
+      }
+
+      if(data.length === 0){
+        html += `<p>No complaints submitted yet.</p>`;
+      } else {
+        html += '<ul style="list-style:none; padding-left:0;">';
+        data.forEach(c => {
+          const waste = wasteTypes.find(w => w.id === c.wasteType);
+          const materialsList = c.materials ? c.materials.join(', ') : '';
+          const date = new Date(c.createdAt).toLocaleString();
+          html += `<li style="margin-bottom: 1rem; padding:1rem; border:1px solid var(--border-color); border-radius: var(--border-radius); background:#f9f9f9; box-shadow: var(--shadow);">
             <img src="${waste.icon}" alt="${waste.name} icon" style="width:24px; height:24px; vertical-align: middle"/>
             <strong> ${waste.name}</strong> (${c.locationType})<br/>
             <strong>Materials:</strong> ${materialsList}<br/>
@@ -259,18 +259,18 @@ async function renderComplaints(){
           ${c.photoNames ? `<br/><strong>Photo(s):</strong> ${c.photoNames}` : ''}
           ${c.status === 'PENDING' ? `<br/><em>Expected resolution date/time: ${date}</em>` : ''}
         </li>`;
-            });
-            html += '</ul>';
-        }
+        });
+        html += '</ul>';
+      }
     } catch (error) {
-        console.error('Error fetching complaints:', error);
-        html += `<p style="color: red;">Error loading complaints: ${error.message}</p>`;
+      console.error('Error fetching complaints:', error);
+      html += `<p style="color: red;">Error loading complaints: ${error.message}</p>`;
     }
-
+    
     document.getElementById('pageContent').innerHTML = html;
-}
+  }
 
-function renderBooking(){
+  function renderBooking(){
     const wasteTypeCheckboxes = wasteTypes.map(wt => `
       <label style="flex:1 1 45%; display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem; cursor:pointer;">
         <input type="checkbox" name="bookingWasteTypes" value="${wt.id}" />
@@ -348,11 +348,11 @@ function renderBooking(){
     endDateInput.min = todayStr;
 
     startDateInput.addEventListener('change', () => {
-        endDateInput.min = startDateInput.value || todayStr;
-        if(endDateInput.value < endDateInput.min){
-            endDateInput.value = startDateInput.value;
-        }
-        validateBookingForm();
+      endDateInput.min = startDateInput.value || todayStr;
+      if(endDateInput.value < endDateInput.min){
+        endDateInput.value = startDateInput.value;
+      }
+      validateBookingForm();
     });
     endDateInput.addEventListener('change', validateBookingForm);
     bookingForm.frequency.addEventListener('change', validateBookingForm);
@@ -361,109 +361,109 @@ function renderBooking(){
     document.getElementById('pickupLocation').addEventListener('input', validateBookingForm);
 
     function validateBookingForm() {
-        const locTypeChecked = Boolean(bookingForm.querySelector('input[name="locationTypeBooking"]:checked'));
-        const sd = startDateInput.value;
-        const ed = endDateInput.value;
-        const freq = bookingForm.frequency.value;
-        const wasteTypesChecked = Array.from(bookingForm.querySelectorAll('input[name="bookingWasteTypes"]:checked')).length > 0;
-        const pickupLocation = document.getElementById('pickupLocation').value.trim();
-        submitBtn.disabled = !(locTypeChecked && sd && ed && freq && (ed >= sd) && wasteTypesChecked && pickupLocation);
+      const locTypeChecked = Boolean(bookingForm.querySelector('input[name="locationTypeBooking"]:checked'));
+      const sd = startDateInput.value;
+      const ed = endDateInput.value;
+      const freq = bookingForm.frequency.value;
+      const wasteTypesChecked = Array.from(bookingForm.querySelectorAll('input[name="bookingWasteTypes"]:checked')).length > 0;
+      const pickupLocation = document.getElementById('pickupLocation').value.trim();
+      submitBtn.disabled = !(locTypeChecked && sd && ed && freq && (ed >= sd) && wasteTypesChecked && pickupLocation);
     }
 
     bookingForm.addEventListener('submit', async e => {
-        e.preventDefault();
-        const token = localStorage.getItem('token');
+      e.preventDefault();
+      const token = localStorage.getItem('token');
 
-        const bookingData = {
-            locationType: bookingForm.querySelector('input[name="locationTypeBooking"]:checked').value,
-            pickupLocation: document.getElementById('pickupLocation').value.trim(),
-            startDate: startDateInput.value,
-            endDate: endDateInput.value,
-            frequency: bookingForm.frequency.value,
-            wasteTypes: Array.from(bookingForm.querySelectorAll('input[name="bookingWasteTypes"]:checked')).map(cb => cb.value),
-            remarks: document.getElementById('remarks').value.trim()
-        };
+      const bookingData = {
+        locationType: bookingForm.querySelector('input[name="locationTypeBooking"]:checked').value,
+        pickupLocation: document.getElementById('pickupLocation').value.trim(),
+        startDate: startDateInput.value,
+        endDate: endDateInput.value,
+        frequency: bookingForm.frequency.value,
+        wasteTypes: Array.from(bookingForm.querySelectorAll('input[name="bookingWasteTypes"]:checked')).map(cb => cb.value),
+        remarks: document.getElementById('remarks').value.trim()
+      };
 
-        try {
-            const response = await fetch('http://localhost:8080/api/bookings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(bookingData)
-            });
+      try {
+        const response = await fetch('http://localhost:8080/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(bookingData)
+        });
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to create booking');
-            }
-
-            alert("Conservancy service booked successfully!");
-            bookingForm.reset();
-            submitBtn.disabled = true;
-            document.getElementById('pickupLocation').value = '';
-
-            // Update schedule calendar
-            if (document.querySelector('#calendar')) {
-                renderSchedule();
-            }
-        } catch (error) {
-            console.error('Error creating booking:', error);
-            alert('Failed to book service: ' + error.message);
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to create booking');
         }
-    });
-}
 
-async function renderSchedule(){
+        alert("Conservancy service booked successfully!");
+        bookingForm.reset();
+        submitBtn.disabled = true;
+        document.getElementById('pickupLocation').value = '';
+
+        // Update schedule calendar
+        if (document.querySelector('#calendar')) {
+          renderSchedule();
+        }
+      } catch (error) {
+        console.error('Error creating booking:', error);
+        alert('Failed to book service: ' + error.message);
+      }
+    });
+  }
+
+  async function renderSchedule(){
     const monthName = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' });
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
 
     const token = localStorage.getItem('token');
-
+    
     try {
-        // Fetch schedules from backend
-        const schedulesResponse = await fetch('http://localhost:8080/api/schedules', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (schedulesResponse.ok) {
-            const schedules = await schedulesResponse.json();
-            scheduledCollections = schedules.map(s => ({
-                date: s.scheduleDate,
-                types: s.wasteTypes
-            }));
+      // Fetch schedules from backend
+      const schedulesResponse = await fetch('http://localhost:8080/api/schedules', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-
-        // Fetch bookings from backend
-        const bookingsResponse = await fetch('http://localhost:8080/api/bookings', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (bookingsResponse.ok) {
-            const bookingsData = await bookingsResponse.json();
-            bookings = bookingsData.map(b => ({
-                startDate: b.startDate,
-                endDate: b.endDate,
-                wasteTypes: b.wasteTypes
-            }));
+      });
+      
+      if (schedulesResponse.ok) {
+        const schedules = await schedulesResponse.json();
+        scheduledCollections = schedules.map(s => ({
+          date: s.scheduleDate,
+          types: s.wasteTypes
+        }));
+      }
+      
+      // Fetch bookings from backend
+      const bookingsResponse = await fetch('http://localhost:8080/api/bookings', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
+      });
+      
+      if (bookingsResponse.ok) {
+        const bookingsData = await bookingsResponse.json();
+        bookings = bookingsData.map(b => ({
+          startDate: b.startDate,
+          endDate: b.endDate,
+          wasteTypes: b.wasteTypes
+        }));
+      }
     } catch (error) {
-        console.error('Error fetching schedules/bookings:', error);
-        // Fallback to empty arrays
-        scheduledCollections = [];
-        bookings = [];
+      console.error('Error fetching schedules/bookings:', error);
+      // Fallback to empty arrays
+      scheduledCollections = [];
+      bookings = [];
     }
 
-    console.log('renderSchedule called for', monthName, currentYear);
+console.log('renderSchedule called for', monthName, currentYear);
 //Schedule tab
     let calendarHtml = `<h2>Waste Collection Schedule</h2>
     <div id="calendar" style="max-width: 900px; margin: 0 auto;">
@@ -482,34 +482,34 @@ async function renderSchedule(){
 
     let date = 1;
     for (let i = 0; i < 6; i++) {
-        calendarHtml += '<tr>';
-        for (let j = 0; j < 7; j++) {
-            if (i === 0 && j < firstDay) {
-                calendarHtml += '<td></td>';
-            } else if (date > daysInMonth) {
-                calendarHtml += '<td></td>';
-            } else {
-                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-                const scheduled = scheduledCollections.find(s => s.date === dateStr);
-                const booking = bookings.find(b => b.startDate <= dateStr && b.endDate >= dateStr);
-                const typesHtml = scheduled ? scheduled.types.map(wt => {
-                    const waste = wasteTypes.find(w => w.id === wt);
-                    const centerType = waste.category === 'biodegradable' ? 'Poly Fuel' : 'Recycling';
-                    return `<img src="${waste.icon}" alt="${waste.name} - ${centerType}" style="width:16px; height:16px;" title="${waste.name} - ${centerType}"/>`;
-                }).join('') : '';
-                const bookingHtml = booking ? `<div style="background-color: #e3f2fd; padding: 2px; border-radius: 3px; margin-top: 2px; font-size: 10px;">Booking</div>` : '';
+      calendarHtml += '<tr>';
+      for (let j = 0; j < 7; j++) {
+        if (i === 0 && j < firstDay) {
+          calendarHtml += '<td></td>';
+        } else if (date > daysInMonth) {
+          calendarHtml += '<td></td>';
+        } else {
+          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+          const scheduled = scheduledCollections.find(s => s.date === dateStr);
+          const booking = bookings.find(b => b.startDate <= dateStr && b.endDate >= dateStr);
+          const typesHtml = scheduled ? scheduled.types.map(wt => {
+            const waste = wasteTypes.find(w => w.id === wt);
+            const centerType = waste.category === 'biodegradable' ? 'Poly Fuel' : 'Recycling';
+            return `<img src="${waste.icon}" alt="${waste.name} - ${centerType}" style="width:16px; height:16px;" title="${waste.name} - ${centerType}"/>`;
+          }).join('') : '';
+          const bookingHtml = booking ? `<div style="background-color: #e3f2fd; padding: 2px; border-radius: 3px; margin-top: 2px; font-size: 10px;">Booking</div>` : '';
 
-                calendarHtml += `<td style="border: 1px solid #ccc; padding: 0.5rem; text-align: center; cursor: pointer;" onclick="openScheduleModal('${dateStr}')">${date}<br/>${typesHtml}${bookingHtml}</td>`;
+          calendarHtml += `<td style="border: 1px solid #ccc; padding: 0.5rem; text-align: center; cursor: pointer;" onclick="openScheduleModal('${dateStr}')">${date}<br/>${typesHtml}${bookingHtml}</td>`;
 
-                date++;
-
-            }
+          date++;
 
         }
 
-        calendarHtml += '</tr>';
+      }
 
-        if (date > daysInMonth) break;
+      calendarHtml += '</tr>';
+
+      if (date > daysInMonth) break;
 
     }
 
@@ -588,87 +588,87 @@ async function renderSchedule(){
 
     scheduleForm.addEventListener('submit', e => {
 
-        e.preventDefault();
+      e.preventDefault();
 
-        saveSchedule();
+      saveSchedule();
 
     });
 
-}
+  }
 
-function prevMonth() {
+  function prevMonth() {
 
     currentMonth--;
 
     if (currentMonth < 0) {
 
-        currentMonth = 11;
+      currentMonth = 11;
 
-        currentYear--;
+      currentYear--;
 
     }
 
     renderSchedule();
 
-}
+  }
 
-function nextMonth() {
+  function nextMonth() {
 
     currentMonth++;
 
     if (currentMonth > 11) {
 
-        currentMonth = 0;
+      currentMonth = 0;
 
-        currentYear++;
+      currentYear++;
 
     }
 
     renderSchedule();
 
-}
+  }
 
-function getCurrentLocationReport(){
+  function getCurrentLocationReport(){
     const gpsInfo = document.getElementById('gpsInfoReport');
     gpsInfo.textContent = "Getting location...";
     if (!navigator.geolocation) {
-        gpsInfo.textContent = "Geolocation is not supported by this browser.";
-        return;
+      gpsInfo.textContent = "Geolocation is not supported by this browser.";
+      return;
     }
     navigator.geolocation.getCurrentPosition(position => {
-        const { latitude: lat, longitude: lng } = position.coords;
-        gpsInfo.textContent = `Latitude ${lat}, Longitude ${lng}`;
-        const locInput = document.getElementById('location');
-        if(locInput) locInput.value = `${lat}, ${lng}`;
-        updateNearestCenter(lat, lng);
+      const { latitude: lat, longitude: lng } = position.coords;
+      gpsInfo.textContent = `Latitude ${lat}, Longitude ${lng}`;
+      const locInput = document.getElementById('location');
+      if(locInput) locInput.value = `${lat}, ${lng}`;
+      updateNearestCenter(lat, lng);
     }, error => {
-        gpsInfo.textContent = "";
-        alert("Unable to retrieve your location.");
-        console.error(error);
+      gpsInfo.textContent = "";
+      alert("Unable to retrieve your location.");
+      console.error(error);
     }, {timeout:15000});
-}
+  }
 
-function getCurrentLocationSchedule(){
+  function getCurrentLocationSchedule(){
     const infoDiv = document.getElementById('nearestCentersInfo');
     infoDiv.textContent = "Getting location...";
     if (!navigator.geolocation) {
-        infoDiv.textContent = "Geolocation is not supported by this browser.";
-        return;
+      infoDiv.textContent = "Geolocation is not supported by this browser.";
+      return;
     }
     navigator.geolocation.getCurrentPosition(position => {
-        const { latitude: lat, longitude: lng } = position.coords;
-        infoDiv.textContent = `Latitude ${lat}, Longitude ${lng}`;
-        const locInput = document.getElementById('scheduleLocation');
-        if(locInput) locInput.value = `${lat}, ${lng}`;
-        showNearestCenters();
+      const { latitude: lat, longitude: lng } = position.coords;
+      infoDiv.textContent = `Latitude ${lat}, Longitude ${lng}`;
+      const locInput = document.getElementById('scheduleLocation');
+      if(locInput) locInput.value = `${lat}, ${lng}`;
+      showNearestCenters();
     }, error => {
-        infoDiv.textContent = "";
-        alert("Unable to retrieve your location.");
-        console.error(error);
+      infoDiv.textContent = "";
+      alert("Unable to retrieve your location.");
+      console.error(error);
     }, {timeout:15000});
-}
+  }
 
-function updateNearestCenter(lat, lng){
+  function updateNearestCenter(lat, lng){
 
     let centerContainer = document.getElementById('nearestCenter');
 
@@ -676,39 +676,39 @@ function updateNearestCenter(lat, lng){
 
     if(lat === undefined || lng === undefined){
 
-        const locText = document.getElementById('location')?.value.trim();
+      const locText = document.getElementById('location')?.value.trim();
 
-        if(!locText){
+      if(!locText){
 
-            centerContainer.style.display = "none";
+        centerContainer.style.display = "none";
 
-            return;
+        return;
 
-        }
+      }
 
-        const parts = locText.split(',').map(p => p.trim());
+      const parts = locText.split(',').map(p => p.trim());
 
-        if(parts.length === 2){
+      if(parts.length === 2){
 
-            const l1 = parseFloat(parts[0]);
+        const l1 = parseFloat(parts[0]);
 
-            const l2 = parseFloat(parts[1]);
+        const l2 = parseFloat(parts[1]);
 
-            if(!isNaN(l1) && !isNaN(l2)){
+        if(!isNaN(l1) && !isNaN(l2)){
 
-                lat = l1; lng = l2;
-
-            }
+          lat = l1; lng = l2;
 
         }
+
+      }
 
     }
 
     if(lat === undefined || lng === undefined){
 
-        centerContainer.style.display = "none";
+      centerContainer.style.display = "none";
 
-        return;
+      return;
 
     }
 
@@ -718,79 +718,79 @@ function updateNearestCenter(lat, lng){
 
     recyclingCenters.forEach(center => {
 
-        const dist = getDistance(lat, lng, center.lat, center.lng);
+      const dist = getDistance(lat, lng, center.lat, center.lng);
 
-        if(dist < minDist){
+      if(dist < minDist){
 
-            minDist = dist;
+        minDist = dist;
 
-            nearest = center;
+        nearest = center;
 
-        }
+      }
 
     });
 
     if(nearest){
-        centerContainer.innerHTML = `Nearest Recycling Center: <strong>${nearest.name}</strong> (~${minDist.toFixed(1)} km)`;
-        centerContainer.style.display = "block";
+      centerContainer.innerHTML = `Nearest Recycling Center: <strong>${nearest.name}</strong> (~${minDist.toFixed(1)} km)`;
+      centerContainer.style.display = "block";
     } else {
-        centerContainer.style.display = "none";
+      centerContainer.style.display = "none";
     }
-}
+  }
 
-function getDistance(lat1, lng1, lat2, lng2){
+  function getDistance(lat1, lng1, lat2, lng2){
     const R = 6371; // Radius of the earth in km
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLng/2) * Math.sin(dLng/2);
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng/2) * Math.sin(dLng/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     const d = R * c; // Distance in km
     return d;
-}
+  }
 
-function showNearestCenters(){
+  function showNearestCenters(){
     const locText = document.getElementById('scheduleLocation').value.trim();
     if(!locText){
-        alert("Please enter your location.");
-        return;
+      alert("Please enter your location.");
+      return;
     }
     const parts = locText.split(',').map(p => p.trim());
     if(parts.length !== 2){
-        alert("Please enter location in format: latitude,longitude");
-        return;
+      alert("Please enter location in format: latitude,longitude");
+      return;
     }
     const lat = parseFloat(parts[0]);
     const lng = parseFloat(parts[1]);
     if(isNaN(lat) || isNaN(lng)){
-        alert("Invalid coordinates.");
-        return;
+      alert("Invalid coordinates.");
+      return;
     }
     let nearestRecycling = null;
     let minDistRecycling = Infinity;
     recyclingCenters.forEach(center => {
-        const dist = getDistance(lat, lng, center.lat, center.lng);
-        if(dist < minDistRecycling){
-            minDistRecycling = dist;
-            nearestRecycling = center;
-        }
+      const dist = getDistance(lat, lng, center.lat, center.lng);
+      if(dist < minDistRecycling){
+        minDistRecycling = dist;
+        nearestRecycling = center;
+      }
     });
     let nearestPolyFuel = null;
     let minDistPolyFuel = Infinity;
     polyFuelCenters.forEach(center => {
-        const dist = getDistance(lat, lng, center.lat, center.lng);
-        if(dist < minDistPolyFuel){
-            minDistPolyFuel = dist;
-            nearestPolyFuel = center;
-        }
+      const dist = getDistance(lat, lng, center.lat, center.lng);
+      if(dist < minDistPolyFuel){
+        minDistPolyFuel = dist;
+        nearestPolyFuel = center;
+      }
     });
     const infoDiv = document.getElementById('nearestCentersInfo');
     infoDiv.innerHTML = `
       <p><strong>Nearest Recycling Center:</strong> ${nearestRecycling ? `${nearestRecycling.name} (~${minDistRecycling.toFixed(1)} km)` : 'None found'}</p>
       <p><strong>Nearest PolyFuel Center:</strong> ${nearestPolyFuel ? `${nearestPolyFuel.name} (~${minDistPolyFuel.toFixed(1)} km)` : 'None found'}</p>
     `;
-}
+  }
 function getNextScheduledDate(startDate, frequency) {
     if (!startDate || !frequency) return null;
 
@@ -946,124 +946,124 @@ function renderDashboard(){
     `;
 }
 
-async function openScheduleModal(dateStr){
+  async function openScheduleModal(dateStr){
     document.getElementById('modalDate').textContent = dateStr;
     document.getElementById('scheduleModal').style.display = 'flex';
-
+    
     const token = localStorage.getItem('token');
     try { // Fetch schedules to find existing one for this date
-        const response = await fetch('http://localhost:8080/api/schedules', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (response.ok) {
-            const schedules = await response.json();
-            const existing = schedules.find(s => s.scheduleDate === dateStr);
-
-            if(existing){
-                document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => {
-                    cb.checked = existing.wasteTypes.includes(cb.value);
-                });
-            } else {
-                document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => cb.checked = false);
-            }
+      const response = await fetch('http://localhost:8080/api/schedules', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
+      });
+      
+      if (response.ok) {
+        const schedules = await response.json();
+        const existing = schedules.find(s => s.scheduleDate === dateStr);
+        
+        if(existing){
+          document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => {
+            cb.checked = existing.wasteTypes.includes(cb.value);
+          });
+        } else {
+          document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => cb.checked = false);
+        }
+      }
     } catch (error) {
-        console.error('Error fetching schedules for modal:', error);
-        // Fallback to unchecked
-        document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => cb.checked = false);
+      console.error('Error fetching schedules for modal:', error);
+      // Fallback to unchecked
+      document.querySelectorAll('input[name="scheduleWasteTypes"]').forEach(cb => cb.checked = false);
     }
-}
+  }
 
-async function saveSchedule(){
+  async function saveSchedule(){
     const dateStr = document.getElementById('modalDate').textContent;
     const selectedTypes = Array.from(document.querySelectorAll('input[name="scheduleWasteTypes"]:checked')).map(cb => cb.value);
     if(selectedTypes.length === 0){
-        alert("Please select at least one waste type.");
-        return;
+      alert("Please select at least one waste type.");
+      return;
     }
-
+    
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch('http://localhost:8080/api/schedules', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                scheduleDate: dateStr,
-                wasteTypes: selectedTypes
-            })
-        });
+      const response = await fetch('http://localhost:8080/api/schedules', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          scheduleDate: dateStr,
+          wasteTypes: selectedTypes
+        })
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to save schedule');
-        }
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to save schedule');
+      }
 
-        closeScheduleModal();
-        renderSchedule();
+      closeScheduleModal();
+      renderSchedule();
     } catch (error) {
-        console.error('Error saving schedule:', error);
-        alert('Failed to save schedule: ' + error.message);
+      console.error('Error saving schedule:', error);
+      alert('Failed to save schedule: ' + error.message);
     }
-}
+  }
 
-async function clearSchedule(){
+  async function clearSchedule(){
     const dateStr = document.getElementById('modalDate').textContent;
     const token = localStorage.getItem('token');
-
+    
     try {
-        // First, get the schedule ID for this date
-        const response = await fetch('http://localhost:8080/api/schedules', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+      // First, get the schedule ID for this date
+      const response = await fetch('http://localhost:8080/api/schedules', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const schedules = await response.json();
+      const scheduleToDelete = schedules.find(s => s.scheduleDate === dateStr);
+      
+      if (scheduleToDelete) {
+        const deleteResponse = await fetch(`http://localhost:8080/api/schedules/${scheduleToDelete.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
 
-        const schedules = await response.json();
-        const scheduleToDelete = schedules.find(s => s.scheduleDate === dateStr);
-
-        if (scheduleToDelete) {
-            const deleteResponse = await fetch(`http://localhost:8080/api/schedules/${scheduleToDelete.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!deleteResponse.ok) {
-                const errorData = await deleteResponse.json();
-                throw new Error(errorData.message || 'Failed to delete schedule');
-            }
+        if (!deleteResponse.ok) {
+          const errorData = await deleteResponse.json();
+          throw new Error(errorData.message || 'Failed to delete schedule');
         }
-
-        closeScheduleModal();
-        renderSchedule();
+      }
+      
+      closeScheduleModal();
+      renderSchedule();
     } catch (error) {
-        console.error('Error clearing schedule:', error);
-        alert('Failed to clear schedule: ' + error.message);
+      console.error('Error clearing schedule:', error);
+      alert('Failed to clear schedule: ' + error.message);
     }
-}
+  }
 
-function closeScheduleModal(){
+  function closeScheduleModal(){
     document.getElementById('scheduleModal').style.display = 'none';
-}
+  }
 // dashboard
-function navigateTo(page){
+  function navigateTo(page){
     const pages = {
-        'report': renderReport,
-        'booking': renderBooking,
-        'complaints': renderComplaints,
-        'schedule': renderSchedule,
-        'dashboard': renderDashboard,
-        'ridertracking': renderRiderTracking,
+      'report': renderReport,
+      'booking': renderBooking,
+      'complaints': renderComplaints,
+      'schedule': renderSchedule,
+      'dashboard': renderDashboard,
+      'ridertracking': renderRiderTracking,
         'about': () => {
             document.getElementById('pageContent').innerHTML = `
     <h2>About</h2>
@@ -1093,16 +1093,16 @@ function navigateTo(page){
         'profile': renderProfile
     };
     if(pages[page]){
-        pages[page]();
+      pages[page]();
     }
     // Update active nav button
     document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
     const activeBtn = document.querySelector(`nav button[onclick="navigateTo('${page}')"]`);
     if(activeBtn) activeBtn.classList.add('active');
-}
+  }
 
-// Rider Tracking simulation only
-function renderRiderTracking() {
+  // Rider Tracking simulation only
+  function renderRiderTracking() {
     const html = `
       <h2>Rider Tracking Simulation</h2>
       <p>Simulate rider movement on the map below.</p>
@@ -1115,11 +1115,11 @@ function renderRiderTracking() {
     `;
     document.getElementById('pageContent').innerHTML = html;
     initializeMap();
-}
+  }
 
-// Driver tracking simulation code (from Main2.html)
-let map, driverMarker, simulationInterval;
-const driverPath = [
+  // Driver tracking simulation code (from Main2.html)
+  let map, driverMarker, simulationInterval;
+  const driverPath = [
     {lat: 28.6448, lng: 77.2167},
     {lat: 28.6455, lng: 77.2200},
     {lat: 28.6460, lng: 77.2250},
@@ -1130,123 +1130,123 @@ const driverPath = [
     {lat: 28.6510, lng: 77.2500},
     {lat: 28.6520, lng: 77.2550},
     {lat: 28.6530, lng: 77.2600},
-];
-let currentDriverIndex = 0;
-const driverStatuses = [
+  ];
+  let currentDriverIndex = 0;
+  const driverStatuses = [
     "Driver is starting from the current location.",
     "Driver is en route to pickup location.",
     "Driver has arrived at pickup location.",
     "Driver is picking up passenger.",
     "Driver is en route to destination.",
     "Driver has completed the trip."
-];
+  ];
 
-function initializeMap() {
+  function initializeMap() {
     const startCoord = ol.proj.fromLonLat([driverPath[0].lng, driverPath[0].lat]);
     map = new ol.Map({
-        target: 'map',
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
-            })
-        ],
-        view: new ol.View({
-            center: startCoord,
-            zoom: 14
+      target: 'map',
+      layers: [
+        new ol.layer.Tile({
+          source: new ol.source.OSM()
         })
+      ],
+      view: new ol.View({
+        center: startCoord,
+        zoom: 14
+      })
     });
 
     const driverFeature = new ol.Feature({
-        geometry: new ol.geom.Point(startCoord)
+      geometry: new ol.geom.Point(startCoord)
     });
 
     driverFeature.setStyle(new ol.style.Style({
-        image: new ol.style.Circle({
-            radius: 8,
-            fill: new ol.style.Fill({color: 'orange'}),
-            stroke: new ol.style.Stroke({color: 'white', width: 2})
-        })
+      image: new ol.style.Circle({
+        radius: 8,
+        fill: new ol.style.Fill({color: 'orange'}),
+        stroke: new ol.style.Stroke({color: 'white', width: 2})
+      })
     }));
 
     const vectorSource = new ol.source.Vector({
-        features: [driverFeature]
+      features: [driverFeature]
     });
     const vectorLayer = new ol.layer.Vector({
-        source: vectorSource
+      source: vectorSource
     });
     map.addLayer(vectorLayer);
 
     driverMarker = driverFeature;
-}
+  }
 
-function animateMarker(marker, fromLatLng, toLatLng, duration) {
+  function animateMarker(marker, fromLatLng, toLatLng, duration) {
     const start = performance.now();
     const fromCoord = ol.proj.fromLonLat([fromLatLng.lng, fromLatLng.lat]);
     const toCoord = ol.proj.fromLonLat([toLatLng.lng, toLatLng.lat]);
 
     function easeInOutQuad(t) {
-        return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
     }
 
     function animate(time) {
-        const elapsed = time - start;
-        const t = Math.min(elapsed / duration, 1);
-        const easedT = easeInOutQuad(t);
+      const elapsed = time - start;
+      const t = Math.min(elapsed / duration, 1);
+      const easedT = easeInOutQuad(t);
 
-        const currentX = fromCoord[0] + (toCoord[0] - fromCoord[0]) * easedT;
-        const currentY = fromCoord[1] + (toCoord[1] - fromCoord[1]) * easedT;
+      const currentX = fromCoord[0] + (toCoord[0] - fromCoord[0]) * easedT;
+      const currentY = fromCoord[1] + (toCoord[1] - fromCoord[1]) * easedT;
 
-        marker.getGeometry().setCoordinates([currentX, currentY]);
-        map.getView().setCenter([currentX, currentY]);
+      marker.getGeometry().setCoordinates([currentX, currentY]);
+      map.getView().setCenter([currentX, currentY]);
 
-        if (t < 1) {
-            requestAnimationFrame(animate);
-        }
+      if (t < 1) {
+        requestAnimationFrame(animate);
+      }
     }
     requestAnimationFrame(animate);
-}
+  }
 
-function startDriverSimulation() {
+  function startDriverSimulation() {
     if (simulationInterval) return;
     currentDriverIndex = 0;
     updateDriverStatus();
 
     function moveNext() {
-        if (currentDriverIndex + 1 >= driverPath.length) {
-            document.getElementById('driverStatusText').textContent = "Driver has completed the trip.";
-            simulationInterval = null;
-            return;
-        }
-        const from = driverPath[currentDriverIndex];
-        const to = driverPath[currentDriverIndex + 1];
-        animateMarker(driverMarker, from, to, 2800);
-        currentDriverIndex++;
-        updateDriverStatus();
-        simulationInterval = setTimeout(moveNext, 3000);
+      if (currentDriverIndex + 1 >= driverPath.length) {
+        document.getElementById('driverStatusText').textContent = "Driver has completed the trip.";
+        simulationInterval = null;
+        return;
+      }
+      const from = driverPath[currentDriverIndex];
+      const to = driverPath[currentDriverIndex + 1];
+      animateMarker(driverMarker, from, to, 2800);
+      currentDriverIndex++;
+      updateDriverStatus();
+      simulationInterval = setTimeout(moveNext, 3000);
     }
     moveNext();
-}
+  }
 
-function stopDriverSimulation() {
+  function stopDriverSimulation() {
     if (simulationInterval) {
-        clearInterval(simulationInterval);
-        simulationInterval = null;
-        document.getElementById('driverStatusText').textContent = "Simulation stopped.";
+      clearInterval(simulationInterval);
+      simulationInterval = null;
+      document.getElementById('driverStatusText').textContent = "Simulation stopped.";
     }
-}
+  }
 
-function updateDriverStatus() {
+  function updateDriverStatus() {
     let statusIndex = Math.min(currentDriverIndex, driverStatuses.length - 1);
     document.getElementById('driverStatusText').textContent = driverStatuses[statusIndex];
     const statusElem = document.getElementById('driverStatusText');
     statusElem.style.opacity = 0;
     setTimeout(() => {
-        statusElem.style.transition = 'opacity 0.5s ease-in-out';
-        statusElem.style.opacity = 1;
+      statusElem.style.transition = 'opacity 0.5s ease-in-out';
+      statusElem.style.opacity = 1;
     }, 100);
-}
+  }
 
-function renderProfile(){
+  function renderProfile(){
     const html = `
       <h2>User Profile</h2>
       <form id="profileForm" novalidate style="max-width: 400px;">
@@ -1274,59 +1274,59 @@ function renderProfile(){
     `;
     document.getElementById('pageContent').innerHTML = html;
     loadProfile();
-}
+  }
 
-function saveProfile(){
+  function saveProfile(){
     const profile = {
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        vehicle: document.getElementById('vehicle').value.trim()
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      vehicle: document.getElementById('vehicle').value.trim()
     };
     localStorage.setItem('userProfile', JSON.stringify(profile));
     document.getElementById('profileMessage').textContent = "Profile saved successfully.";
-}
+  }
 
-function loadProfile(){
+  function loadProfile(){
     const profileStr = localStorage.getItem('userProfile');
     if(profileStr){
-        const profile = JSON.parse(profileStr);
-        document.getElementById('name').value = profile.name || '';
-        document.getElementById('email').value = profile.email || '';
-        document.getElementById('phone').value = profile.phone || '';
-        document.getElementById('vehicle').value = profile.vehicle || '';
+      const profile = JSON.parse(profileStr);
+      document.getElementById('name').value = profile.name || '';
+      document.getElementById('email').value = profile.email || '';
+      document.getElementById('phone').value = profile.phone || '';
+      document.getElementById('vehicle').value = profile.vehicle || '';
     }
-}
+  }
 
-function setupMaterialTypesSelect(){
+  function setupMaterialTypesSelect(){
     // Assuming material types are predefined or fetched
     // For simplicity, using static
     const materialTypes = {
-        'wet': ['Organic Waste', 'Food Scraps'],
-        'dry': ['Paper', 'Plastic', 'Metal'],
-        'plastic': ['Bottles', 'Bags'],
-        'ewaste': ['Batteries', 'Wires'],
-        'nonveg': ['Meat', 'Bones'],
-        'hazardous': ['Chemicals', 'Paints']
+      'wet': ['Organic Waste', 'Food Scraps'],
+      'dry': ['Paper', 'Plastic', 'Metal'],
+      'plastic': ['Bottles', 'Bags'],
+      'ewaste': ['Batteries', 'Wires'],
+      'nonveg': ['Meat', 'Bones'],
+      'hazardous': ['Chemicals', 'Paints']
     };
     // This function can be expanded
-}
+  }
 
-function populateMaterialTypes(wasteId){
+  function populateMaterialTypes(wasteId){
     const container = document.getElementById('materialTypesContainer');
     const materials = {
-        'wet': ['Organic Waste', 'Food Scraps'],
-        'dry': ['Paper', 'Plastic', 'Metal'],
-        'plastic': ['Bottles', 'Bags'],
-        'ewaste': ['Batteries', 'Wires'],
-        'nonveg': ['Meat', 'Bones'],
-        'hazardous': ['Chemicals', 'Paints']
+      'wet': ['Organic Waste', 'Food Scraps'],
+      'dry': ['Paper', 'Plastic', 'Metal'],
+      'plastic': ['Bottles', 'Bags'],
+      'ewaste': ['Batteries', 'Wires'],
+      'nonveg': ['Meat', 'Bones'],
+      'hazardous': ['Chemicals', 'Paints']
     };
     const options = materials[wasteId] || [];
     container.innerHTML = options.map(m => `<label><input type="checkbox" name="materialTypes" value="${m}" /> ${m}</label>`).join('<br/>');
-}
+  }
 
-function validateForm(){
+  function validateForm(){
     const desc = document.getElementById('description').value.trim();
     const loc = document.getElementById('location').value.trim();
     const locType = document.querySelector('input[name="locationType"]:checked');
@@ -1334,75 +1334,75 @@ function validateForm(){
     const submitBtn = document.querySelector('#submitComplaintBtn');
     const isValid = selectedWasteType && desc && loc && locType && photoInput.files.length > 0;
     submitBtn.disabled = !isValid;
-}
+  }
 
-function openSignInModal() {
+  function openSignInModal() {
     document.getElementById('signInModal').style.display = 'flex';
-}
+  }
 
-function closeModal() {
+  function closeModal() {
     document.getElementById('signInModal').style.display = 'none';
-}
+  }
 
-function switchTab(tab) {
+  function switchTab(tab) {
     const signInTab = document.getElementById('signInTab');
     const signUpTab = document.getElementById('signUpTab');
     const signInForm = document.getElementById('signInForm');
     const signUpForm = document.getElementById('signUpForm');
     if (tab === 'signIn') {
-        signInTab.classList.add('active');
-        signUpTab.classList.remove('active');
-        signInForm.classList.add('active');
-        signUpForm.classList.remove('active');
+      signInTab.classList.add('active');
+      signUpTab.classList.remove('active');
+      signInForm.classList.add('active');
+      signUpForm.classList.remove('active');
     } else {
-        signUpTab.classList.add('active');
-        signInTab.classList.remove('active');
-        signUpForm.classList.add('active');
-        signInForm.classList.remove('active');
+      signUpTab.classList.add('active');
+      signInTab.classList.remove('active');
+      signUpForm.classList.add('active');
+      signInForm.classList.remove('active');
     }
-}
+  }
 
-function toggleRiderOptions() {
+  function toggleRiderOptions() {
     const role = document.getElementById('signUpRole').value;
     const riderOptions = document.getElementById('riderOptions');
     if (role === 'rider') {
-        riderOptions.style.display = 'block';
+      riderOptions.style.display = 'block';
     } else {
-        riderOptions.style.display = 'none';
+      riderOptions.style.display = 'none';
     }
-}
+  }
 
-function signIn() {
+  function signIn() {
     const email = document.getElementById('signInEmail').value;
     const password = document.getElementById('signInPassword').value;
     if (!email || !password) {
-        alert('Please fill in all fields.');
-        return;
+      alert('Please fill in all fields.');
+      return;
     }
     alert('Sign In successful!');
     closeModal();
-}
+  }
 
-function signUp() {
+  function signUp() {
     const name = document.getElementById('signUpName').value;
     const email = document.getElementById('signUpEmail').value;
     const password = document.getElementById('signUpPassword').value;
     const role = document.getElementById('signUpRole').value;
     const riderType = document.getElementById('riderType').value;
     if (!name || !email || !password || !role) {
-        alert('Please fill in all fields.');
-        return;
+      alert('Please fill in all fields.');
+      return;
     }
     if (role === 'rider' && !riderType) {
-        alert('Please select rider type.');
-        return;
+      alert('Please select rider type.');
+      return;
     }
     alert('Sign Up successful!');
     closeModal();
-}
+  }
 
-// Initialize the app
-document.addEventListener('DOMContentLoaded', () => {
+  // Initialize the app
+  document.addEventListener('DOMContentLoaded', () => {
     navigateTo('report'); // Default page
-});
+  });
 
