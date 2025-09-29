@@ -1,9 +1,39 @@
-# Nirmal - Waste Management System
+# **NIRMAL - Waste Management System**
 
-A comprehensive full-stack waste management application with frontend and backend integration.
+##Why It Matters
+- This project  allows users to report waste issues, track collection schedules, and promote eco-friendly practices in their communities in a simple and easy way.
+- We aim to fix the way waste is collected and sorted so that they don't end up in landfills but instead can be repurposed.
+- We want to give our users full control of their waste collection schedule and connect them directly with waste collection services
 
-## 🏗️ Project Structure
+![About Us](images/aboutUs.png)
+![Dashboard](images/dashboard.png)
 
+
+
+## Features
+### Frontend Features
+- **Multi-user Authentication**: Support for different user types
+- **Waste Reporting**: Submit complaints with photos and location
+  ![Report an issue](images/report.png)
+  ![Report an issue](images/comp.png)
+- **Service Booking**: Schedule conservancy services
+  ![Service Booking](images/book1.png)
+  ![Service Booking](images/book2.png)
+- **Collection Scheduling**: Calendar-based waste collection planning
+  ![Collection Schedule](images/collection.png)
+- **Real-time Tracking**: Rider tracking simulation
+  ![About Us](images/tracking.png)
+- **Responsive Design**: Works on desktop and mobile
+
+### Backend Features
+- **JWT Authentication**: Secure token-based authentication
+- **RESTful APIs**: Clean API endpoints for all operations
+- **Dual Database**: MySQL for relational data, MongoDB for activity logs
+- **User Management**: Support for multiple user types with role-based access
+- **Data Validation**: Input validation and error handling
+- **CORS Support**: Cross-origin requests for frontend integration
+
+## Project Structure
 ```
 nirmal-project/
 │
@@ -30,8 +60,7 @@ nirmal-project/
     └── db-init-scripts/           # Database initialization
 ```
 
-## 🚀 Quick Start
-
+##  Quick Start
 ### Prerequisites
 - Java 17+
 - MySQL 8.0+
@@ -39,44 +68,37 @@ nirmal-project/
 - Docker (optional)
 
 ### Option 1: Using Docker (Recommended)
-
 1. **Start the databases**:
    ```bash
    cd docker
    docker-compose up -d
    ```
-
 2. **Start the backend**:
    ```bash
    cd backend
    ./gradlew bootRun
    ```
-
 3. **Open the frontend**:
    - Open `Work Main/Work/index.html` in your browser
    - Or serve it using a local server (e.g., Live Server extension)
 
 ### Option 2: Manual Setup
-
 1. **Start MySQL**:
    - Create database: `nirmal_db`
    - Username: `root`
    - Password: `97488`
-
 2. **Start MongoDB**:
    - Default port: `27017`
    - Database: `nirmal_activity_logs`
-
 3. **Start the backend**:
    ```bash
    cd backend
    ./gradlew bootRun
    ```
-
 4. **Open the frontend**:
    - Open `Work Main/Work/index.html` in your browser
 
-## 🔐 Demo Credentials
+## Demo Credentials
 
 | User Type    | Email                 | Password    | Additional Info   |
 |--------------|-----------------------|-------------|-------------------|
@@ -87,153 +109,112 @@ nirmal-project/
 | Rider (Conservancy) | rider@conservency.com | password123 | Type: Conservancy Rider |
 | User         | user@test.com         | password123 | Regular user      |
 
-## ✨ Features
-
-### Frontend Features
-- **Multi-user Authentication**: Support for different user types
-- **Waste Reporting**: Submit complaints with photos and location
-- **Service Booking**: Schedule conservancy services
-- **Collection Scheduling**: Calendar-based waste collection planning
-- **Real-time Tracking**: Rider tracking simulation
-- **Responsive Design**: Works on desktop and mobile
-
-### Backend Features
-- **JWT Authentication**: Secure token-based authentication
-- **RESTful APIs**: Clean API endpoints for all operations
-- **Dual Database**: MySQL for relational data, MongoDB for activity logs
-- **User Management**: Support for multiple user types with role-based access
-- **Data Validation**: Input validation and error handling
-- **CORS Support**: Cross-origin requests for frontend integration
-
-## 🔧 API Endpoints
-
+## API Endpoints
 ### Authentication (`/api/auth`)
 - `POST /login` - User login
 - `POST /register` - User registration  
 - `POST /logout` - User logout
-
 ### Complaints (`/api/complaints`)
 - `POST /` - Submit complaint
 - `GET /` - Get user complaints
 - `GET /{id}` - Get specific complaint
 - `PUT /{id}/status` - Update complaint status
-
 ### Bookings (`/api/bookings`)
 - `POST /` - Create booking
 - `GET /` - Get user bookings
 - `GET /{id}` - Get specific booking
 - `PUT /{id}/status` - Update booking status
-
 ### Schedules (`/api/schedules`)
 - `POST /` - Create/update schedule
 - `GET /` - Get user schedules
 - `GET /date/{date}` - Get schedules by date
 - `DELETE /{id}` - Delete schedule
 
-## 🗄️ Database Schema
-
+## Database Schema
 ### MySQL Tables
 - **users**: User accounts and profiles
 - **complaints**: Waste-related complaints
 - **bookings**: Conservancy service bookings
 - **schedules**: Waste collection schedules
-
 ### MongoDB Collections
 - **activity_logs**: User activity tracking
 
-## 🛠️ Development
-
+##  Development
 ### Backend Development
 ```bash
 cd backend
 ./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
-
 ### Frontend Development
 - Edit files in `Work Main/Work/`
 - Use Live Server extension for local development
 - API base URL: `http://localhost:8080/api`
-
 ### Database Management
 - **MySQL**: Use any MySQL client (e.g., MySQL Workbench)
 - **MongoDB**: Access via MongoDB Express at `http://localhost:8081`
 
-## 🔒 Security
-
+##  Security
 - JWT tokens for authentication
 - Password encryption using BCrypt
 - CORS configuration for frontend integration
 - Input validation and sanitization
 - Role-based access control
 
-## 📱 User Types & Permissions
-
+##  User Types & Permissions
 1. **USER**: Regular users who can submit complaints and book services
 2. **GREEN_CENTER**: Green center administrators
 3. **NGO**: NGO administrators  
 4. **CONSERVANCY**: Conservancy administrators
 5. **RIDER**: Waste collection riders (NGO or Conservancy)
 
-## 🐳 Docker Services
-
+##  Docker Services
 - **MySQL**: Database for main application data
 - **MongoDB**: Database for activity logs
 - **Mongo Express**: Web-based MongoDB admin interface
 
-## 📝 Configuration
-
+##  Configuration
 ### Backend Configuration (`application.properties`)
 - Database connections (MySQL & MongoDB)
 - JWT secret and expiration
 - CORS settings
 - Server port (8080)
-
 ### Frontend Configuration
 - API base URL: `http://localhost:8080`
 - JWT token storage in localStorage
 - User session management
 
-## 🚨 Troubleshooting
-
+##  Troubleshooting
 ### Common Issues
-
 1. **Database Connection Errors**:
    - Ensure MySQL is running on port 3306
    - Check database credentials in `application.properties`
    - Verify database `nirmal_db` exists
-
 2. **CORS Errors**:
    - Ensure backend is running on port 8080
    - Check CORS configuration in `SecurityConfig.java`
-
 3. **Authentication Issues**:
    - Verify JWT token is stored in localStorage
    - Check token expiration (24 hours default)
-
 4. **Frontend Not Loading**:
    - Use a local server (not file:// protocol)
    - Check browser console for errors
 
-## 📊 Monitoring
-
+##  Monitoring
 - **Application Logs**: Check console output for backend logs
 - **Database Logs**: Monitor MySQL and MongoDB logs
 - **Activity Logs**: View user activities in MongoDB
 
-## 🤝 Contributing
-
+##  Contributing
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Test thoroughly
 5. Submit a pull request
 
-## 📄 License
-
+##  License
 This project is licensed under the MIT License.
 
-## 🆘 Support
-
+##  Support
 For issues and questions:
 1. Check the troubleshooting section
 2. Review the API documentation
