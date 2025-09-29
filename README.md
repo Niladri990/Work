@@ -1,6 +1,6 @@
 # **NIRMAL - Waste Management System**
 
-##Why It Matters
+## Why It Matters
 - This project  allows users to report waste issues, track collection schedules, and promote eco-friendly practices in their communities in a simple and easy way.
 - We aim to fix the way waste is collected and sorted so that they don't end up in landfills but instead can be repurposed.
 - We want to give our users full control of their waste collection schedule and connect them directly with waste collection services
