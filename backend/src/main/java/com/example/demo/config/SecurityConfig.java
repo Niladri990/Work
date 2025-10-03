@@ -27,7 +27,6 @@ import java.util.Arrays;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    @SuppressWarnings("unused")
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
@@ -65,7 +64,7 @@ public class SecurityConfig {
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        // Allow frames for H2 console
+        // Allow H2 console frames
         http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();

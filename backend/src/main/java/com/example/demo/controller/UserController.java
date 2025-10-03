@@ -122,6 +122,8 @@ public class UserController {
                 case RIDER:
                     user.setRiderType(registerRequest.getRiderType());
                     break;
+                default:
+                    break;
             }
             
             User savedUser = userRepository.save(user);
