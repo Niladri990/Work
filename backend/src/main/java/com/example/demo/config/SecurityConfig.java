@@ -27,6 +27,7 @@ import java.util.Arrays;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    @SuppressWarnings("unused")
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
